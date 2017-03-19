@@ -3,596 +3,347 @@
 * message to display.
 *@
 @(message: String)
-@*
-* Call the `main` template with two arguments. The first
-* argument is a `String` with the title of the page, the second
-* argument is an `Html` object containing the body of the page.
-*@
-@main("Jasminを使ってSwiftを学ぼう") {
-    <script>
-        window.CONTROLE_GROUP = false;
-
-        function isCodingTask() {
-            for (var i = 0; i < tasks.length; i++) {
-                if (localStorage.currentTask == tasks[i]) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    </script>
-    <style>
-    .level2 {
-        visibility: hidden;
-        padding-left: 20px
-    }
-
-    </style>
     @*
-    * Get an `Html` object by calling the built-in Play welcome
-    * template and passing a `String` message.
+    * Call the `main` template with two arguments. The first
+    * argument is a `String` with the title of the page, the second
+    * argument is an `Html` object containing the body of the page.
     *@
-    @*
-    @play20.welcome(message, style = "Scala")
-    *@
-    <p id = "logo">
-        <img src="@routes.Assets.versioned("images/Jasmin.png")" width="300" height="88">
-    </p>
-    <p>
-        <button id="prev" class="btn btn-default"> 前の問題 </button>
-        <button id="next" class="btn btn-default"> 次の問題 </button>
-        <button id="submit" class="btn btn-default" onclick="if(window.CONTROLE_GROUP){if(isCodingTask()){document.getElementById('answer').style.display='block';document.getElementById('answer').style.visibility='visible';document.getElementById('ansImg').style.display='block';document.getElementById('ansWord').style.display='hidden';}else{document.getElementById('ansWord').style.display='block'}}else{document.getElementById('answer').style.display='block';document.getElementById('answer').style.visibility='visible'}"> 解答を見る（最下部に表示） </button>
-    </p>
-    <div width="500px" height="800px"><pre id = quiz width="500px" height="800px"></pre></div>
-    <div id="choices" style="padding-top: 20px; float: left">
-        <form>
-            <label><input id="choice1" name="choice" class="level1" type="radio"> <span id="A"></span></label><br>
-            <label><input id="choice2" name="choice" class="level1" type="radio"> <span id="B"></span></label><br>
-            <label><input id="choice3" name="choice" class="level1" type="radio"> <span id="C"></span></label><br>
-            <label><input id="choice4" name="choice" class="level1" type="radio"> <span id="D"></span></label><br>
-        </form>
-    </div>
-    <div id="editorAnswer" style="height: 400px; width: 500px; float: left; padding-right: 250px;padding-bottom:50px">
-    </div>
-    <div id="answer" width="500px" height="400px" style="float: left; visibility: hidden; overflow:auto;">
+    @main("Jasminを使ってSwiftを学ぼう") {
+        <script>
+                window.CONTROLE_GROUP = false;
+                window.CONTROL_TUTORIAL_GROUP =true;//tutorial実験のためのグループ分け, true-> Javaあり
+        </script>
+        @*
+        * Get an `Html` object by calling the built-in Play welcome
+        * template and passing a `String` message.
+        *@
+        @*
+        @play20.welcome(message, style = "Scala")
+        *@
+        <p id = "logo">
+            <img src="@routes.Assets.versioned("images/Jasmin.png")" width="300" height="88">
+        </p>
+        <p>
+            <button id="prev" class="btn btn-default"> Prev </button>
+            <button id="next" class="btn btn-default"> Next </button>
+            @*<button id="submit" class="btn btn-default" onclick="if(window.CONTROLE_GROUP){if(isCodingTask()){document.getElementById('answer').style.display='block';document.getElementById('answer').style.visibility='visible';document.getElementById('ansImg').style.display='block';document.getElementById('ansWord').style.display='hidden';}else{document.getElementById('ansWord').style.display='block'}}else{document.getElementById('answer').style.display='block';document.getElementById('answer').style.visibility='visible'}"> 解答を見る（最下部に表示） </button>*@
+        </p>
+        @*<div id="editorAnswer" style="height: 400px; width: 500px; float: left; padding-right: 250px;padding-bottom:50px">
+        </div>*@
 
-        <pre>
-            <img id="ansImg" src="@routes.Assets.versioned("images/quiz1AnsBoth.png")" style="width:800px; height:100%">
-        </pre>
+        <div id="textbook">
+            <h2><div id="title"></div></h2>
+            <button id="finish" class="btn btn-default" style="visibility: hidden;display:none">Submit</button>
+            <h4><div id="similarity"></div></h4>
+            <hr>
+            <div id="textString"></div>
+            <hr><hr>
+            Source:<br>
 
-    </div>
-    <div>
-        <pre id = "ansWord"></pre>
-    </div>
-    @* Converter in the bottom *@
-    <div id="tool_margin" style="height: 250px; clear: both;"></div>
-    <div id="tool" style="background-color: white;
-        position: fixed;
-        bottom: 0;
-        border: solid;
-        height: 250px;
-        width: 90%;
-        z-index: 10;
-        float: left">
-
-        <div clsee="row">
-            @*CodeArea(ACE)*@
-            <div class="btn-group" style="background-color: whitesmoke;
-                margin-top: 20px;
-                margin-left: 15px;
-                width: 975px">
-                @*<div class="btn-group">*@
-                @*<button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-search"></i> <span class="caret"></span></button>*@
-                @*<ul class="dropdown-menu" id="font-size">*@
-                @*<li><a href="#" data-size="10">小さい</a></li>*@
-                @*<li><a href="#" data-size="12">普通</a></li>*@
-                @*<li><a href="#" data-size="14">大きい</a></li>*@
-                @*</ul>*@
-                @*</div>*@
-                @*<button id="bold" class="btn btn-default"><i class="glyphicon glyphicon-bold"></i></button>*@
-                @*<button id="save" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i></button>*@
-                @*<button id="load" class="btn btn-default"><i class="glyphicon glyphicon-folder-open"></i></button>*@
-                <button id="exec" class="btn btn-default"><i class="glyphicon glyphicon-play"></i></button>
-                <button id="close" class="btn btn-default"><i class="glyphicon glyphicon-menu-down"></i></button>
-                @*<button id="step" class="btn btn-default"><i class="glyphicon glyphicon-arrow-down"></i></button>*@
-            </div>
-
+            <div id="source"></div>
+            @*alert(@message);*@
+            <p id = "message">@message</p>
         </div>
-        <div id="converter" style="height: 180px;
-            overflow: auto">
-            <div class="col-lg-6 col-md-6">
-                Java
-                <div id="editorMain" style="height: 600px;"></div>
 
+        <div class="stopwatch" style = "visibility: hidden; display: none"></div>
+
+
+
+        @* Converter in the bottom *@
+        <div id="tool_margin" style="height: 250px; clear: both;"></div>
+        <div id="tool" style="
+            background-color: white;
+            position: fixed;
+            bottom: 0;
+            border: solid;
+            height: 250px;
+            width: 90%;
+            z-index: 10;
+            float: left;
+            visibility: hidden;
+            display: none">
+
+            <div clsee="row">
+                @*CodeArea(ACE)*@
+                <div class="btn-group" style="background-color: whitesmoke;
+                    margin-top: 20px;
+                    margin-left: 15px;
+                    width: 975px">
+                    <button id="exec" class="btn btn-default"><i class="glyphicon glyphicon-play"></i></button>
+                    <button id="close" class="btn btn-default"><i class="glyphicon glyphicon-menu-down"></i></button>
+                </div>
             </div>
-            <div class="col-lg-6 col-md-6">
-                Swift
-                <div id="editorResult" style="height: 600px"></div>
+            <div id="converter" style="height: 180px;
+                overflow: auto">
+                <div class="col-lg-6 col-md-6">
+                    Java
+                    <div id="editorMain" style="height: 600px;"></div>
+
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    Swift
+                    <div id="editorResult" style="height: 600px"></div>
+                </div>
             </div>
         </div>
-    </div>
-    @*処理の流れ<br>*@
-    @*実行ボタン：JavaScriptでイベント取得。エディタ上のテキストを取得。Fromの形でPOST(JavaScript)<br>*@
-    @*コントローラはポストされたデータを取得。アクション関数で文字列の処理など。(Scala,String)ビューにセット。<br>*@
-    @*ビュー：生文字を取得(改行文字に注意)。JavaScriptでコメント文字など操作してセット。<br>*@
-    <script>
-            $(function() {
-                if(window.CONTROLE_GROUP) {
-                    $('#tool, #tool_margin').hide();
-                    $('#ansImg').hide();
-                    setQuizAnswersWithoutTranslation(localStorage.currentTask);
-                }
-            })
+        @*処理の流れ<br>*@
+        @*実行ボタン：JavaScriptでイベント取得。エディタ上のテキストを取得。Fromの形でPOST(JavaScript)<br>*@
+        @*コントローラはポストされたデータを取得。アクション関数で文字列の処理など。(Scala,String)ビューにセット。<br>*@
+        @*ビュー：生文字を取得(改行文字に注意)。JavaScriptでコメント文字など操作してセット。<br>*@
+        <script src="@routes.Assets.versioned("javascripts/stopWatch.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/textbook.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/textbook_noCmp.js")" type="text/javascript"></script>
 
-            function setQuizAnswersWithoutTranslation(task){
-                for(var i=0;i<questions.length;i++){
-                    if(task==questions[i]){
-                        document.getElementById('ansWord').innerHTML = ansNoTranslation[i];
+        <script>
+                var textStrings;// tutorial text shown in the page
+                var exprData = new Object(); // experiment result formed by: [[id, textNum]: [time], [id, textNum2]: [time2]...]
+                var exprDataString = "";
+                $(function() {
+                    if(window.CONTROLE_GROUP) {
+                        $('#tool, #tool_margin').hide();
+                    }
+                    stopwatch.start();
+
+                })
+
+                function setText(){
+                    if(window.CONTROL_TUTORIAL_GROUP == false){
+                        document.getElementById('similarity').style.visibility='hidden';
+                        document.getElementById('similarity').style.display='none';
+                        textStrings = allText_noCmp;
+                    }else{
+                        textStrings = allText;
+                    }
+                }
+                //Generate random id
+
+                function makeId(){
+                    var text = "";
+                    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+                    for( var i=0; i < 5; i++ )
+                        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                    return text;
+                }
+
+                $('#close').on('click', function () {
+                    var curHeight = $('#tool').height();
+                    if (curHeight > 200) {//appeared
+                        $('#tool').animate({
+                            height: 70
+                        }, "normal");
+                        $('#converter').fadeOut();
+                    } else {
+                        $('#tool').animate({
+                            height: 250
+                        }, "normal");
+                        $('#converter').fadeIn();
+                    }
+                });
+                var url = window.CONTROL_TUTORIAL_GROUP ? "https://goo.gl/forms/hzlPjwHBYFndYN3H2" : "https://goo.gl/forms/Qv8HCWbolZAMUyCE3";
+                var exprId = makeId();
+                var endEnd = "<h2>学習お疲れ様でした！<br>" +
+                        "あなたのIDは" + "\""+exprId+"\"" + "です。紙などにメモしてください。<br>" +
+                        "下のSubmitボタンを押して学習終了してください！</h2>"
+                var result = document.getElementById('message').innerHTML;
+                if(result.length>0){
+                    showCurrentText('E')
+                }else{
+                    showCurrentText('T0');
+                }
+                $('#next').on('click', function () {
+                    var time = document.getElementsByClassName('stopwatch')[0].innerHTML;// get time from stopwatch div
+                    saveData(localStorage.currentText, time);
+                    var textNum = nextText(localStorage.currentText);
+                    showCurrentText(textNum, true);
+                    stopwatch.restart();
+                });
+                $('#prev').on('click', function () {
+                    var time = document.getElementsByClassName('stopwatch')[0].innerHTML;// get time from stopwatch div
+                    saveData(localStorage.currentText, time);
+                    var textNum = prevText(localStorage.currentText);
+                    showCurrentText(textNum, true);
+                    stopwatch.restart();
+                })
+
+                $(function() {
+                    var hash = location.hash;
+                    if (hash) {
+                        var textNum = hash.substring(1);
+                        showCurrentText(textNum);
+                    }
+                });
+                function nextText(textNum){
+                    var type = textNum[0];
+                    var index = parseInt(textNum.substring(1)) | 0;
+                    if(index==textStrings.length-1){
+                        return "E";
                     }
 
+                    return type+(index+1);
                 }
-            }
-
-            $('#close').on('click', function () {
-                var curHeight = $('#tool').height();
-                if (curHeight > 200) {//appeared
-                    $('#tool').animate({
-                        height: 70
-                    }, "normal");
-                    $('#converter').fadeOut();
-                } else {
-                    $('#tool').animate({
-                        height: 250
-                    }, "normal");
-                    $('#converter').fadeIn();
+                function prevText(textNum){
+                    var type = textNum[0];
+                    var index = parseInt(textNum.substring(1)) | 0;
+                    if(type=='E'){
+                        return 'T'+(textStrings.length-1);
+                    }
+                    if(index==0){
+                        return 'T0';
+                    }
+                    return type+(index-1);
                 }
-            });
-            var tasks = ["問1. 長方形の面積を計算する関数 area(Double, Double) -> Double を実装してください。その後、area関数を用いて幅4.5、長さ5.5の長方形の面積を計算してください。<br>",
-                "問2. 文字列（String）をCharacterの配列に変える関数 toArray(String) -> [Character] を実装してください。<br>"+
-                "そのあと、関数から返された配列にCharacterである”S”を追加してください。",
-                "問3. 一つの文字列が回文かどうかを判断する関数を実装してください。<br>回文であればtrue, そうでなければfalseを返してください。<br>",
-                "問4. ソートされた数字の配列から重複している要素を削除して、重複している要素のない配列の長さを返す関数を実装してください。<br>"
-            ];
-            var questions = ["問1. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" +
-            `
- class Workplace {
-    var workplaceAddress: String
-    var city: String
-    init(workplaceAddress: String, city: String) {
-        self.workplaceAddress = workplaceAddress
-        self.city = city
-    }
- }
-
- class Person {
-    var name: String
-    var workplace: Workplace
-
-    init(name: String, workplace: Workplace) {
-        self.name = name
-        self.workplace = workplace
-    }
- }
- var address = Workplace(workplaceAddress: "112 Jasmin Street", city: "JasminTown")
- var bob = Person(name: "Bob", workplace: address)
- var amy = Person(name: "Amy", workplace: address)
-
-もしAmyが転職して、就職先を変更したい場合、
-
-amy.workplace.workplaceAddress = "123 New Street"
-
-このコードに関して、以下のどれが正しいですか？
-                     `,
-
-                "問2. 以下の2つのif文を実行した際に得られる正しい結果を選んでください。<br>" +
-                `
-let i = 101
-
-if case 100...101 = i {
-    print("Hello, world!")
-} else {
-    print("Goodbye, world!")
-}
-
-if case 100..<101 = i {
-    print("Hello, world!")
-} else {
-    print("Goodbye, world!")
-}
-
-                     `,
-                "問3. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" +
-                `
-let names = ["River", "Kaylee", "Zoe"]
-let result = names.sort { $0 > $1 }
-print(result)
-
-                     `,
-
-                "問4. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" +
-                `
-func foo(function: (Int) -> Int) -> Int {
-    return function(function(5))
-}
-
-func bar<Int: IntegerType>(number: Int) -> Int {
-    return number * 3
-}
-
-print(foo(bar))
-
-                  `,
-                "問5. 以下のSwiftコードについて、正確かつ一番簡潔に書き直したコードを選んでください。<br>" +
-                `
-let animals = ["fish", "cat", "chicken", "dog"]
-let sortedAnimals = animals.sort {(one: String, two: String) -> Bool in return one < two
-}
-
-                `,
-                "問6. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" + `
-let year: Int? = Int("2020")
-let remain: Int = year! - 2016
-
-let year2: Int? = nil
-let remain2: Int = year! - 2016
-
-let year3: Int? = nil
-if let remain3 = year3 {
-    print("remain \\(remain3-2016)years")
-}
-                `,
-                "問7. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" +
-                `
-let i = 11
-let j = 20
-
-let name = 9...11 ~= i ? j % 2 == 1 ? "Larry" : "Laura" : "Libby"
-                            `,
-                "問8. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" +
-                `
-var crew = ["Captain": "Malcom", "Doctor": "Simon"]
-var crew2 = crew
-crew2 = [:]
-print(crew.count)
-print(crew2.count)                            `,
-                "問9. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" +
-                `
-let d: Double = 0.5
-let f: Float = d
-                            `,
-                "問10. 以下のSwiftコードを実行した際に得られる正しい結果を選んでください。<br>" +
-                `
-var score = 65
-switch score {
-case 45..<75:
-    print("追試")
-case 90...100:
-    print("秀")
-case 80..<90:
-    print("優")
-case 70..<80:
-    print("良")
-case 60..<70:
-    print("可")
-default:
-    print("追試不可")
-}
-                            `
-            ];
-            var ansNoTranslation =["A", "C", "C", "C", "D", "B", "C", "A", "D", "A"];
-            var ans1s = [
-                "A. Bobの就職先の住所も一緒に変わる",
-                "B. Amyの就職先の住所だけが変わる",
-                "C. どちらも何も変わらない",
-                "D. コンパイルエラー"
-            ];
-            var ans2s = [
-                "A. 両方\"Hello, world!\"を出力",
-                "B. 両方\"Goodbye, world!\"を出力",
-                "C. 一個目のif文は\"Hello, world!\", 二個目のif文は\"Goodbye, world!\"を出力",
-                "D. 一個目のif文は\"Goodbye, world!\", 二個目のif文は\"Hello, world!\"を出力"
-
-            ]
-            var ans3s = [
-                "A. [\"Kaylee\", \"River\", \"Zoe\"]",
-                "B. [\"Kaylee\"]",
-                "C. [\"Zoe\", \"River\", \"Kaylee\"]",
-                "D. [\"Zoe\"]"
-            ];
-            var ans4s = [
-                "A. 15",
-                "B. 3",
-                "C. 45",
-                "D. 5"
-            ];
-            var ans5s = [
-                "A. let sortedAnimals = animals.sort { (one, two) -> Bool in return one < two }",
-                "B. let sortedAnimals = animals.sort { (one, two) in return one < two }",
-                "C. let sortedAnimals = animals.sort { return $0 < $1 }",
-                "D. let sortedAnimals = animals.sort { $0 < $1 }"
-            ]
-            var ans6s = [
-                "A. remain = 4, remain2 = nil, remain3 = nil",
-                "B. remain = 4, remain2はコンパイルエラーで実行できない, remain3はif文が実行不可能で宣言されない",
-                "C. remain = nil, remain2 = nil, remain3はif文が実行不可能で宣言されない",
-                "D. remain = nil, remain2 = 4, remain3 = nil"
-            ];
-            var ans7s = [
-                "A. \"\"",
-                "B. Larry",
-                "C. Laura",
-                "D. Libby"
-            ];
-            var ans8s = [
-                "A. 1個目のprintが2で、2個目のprintが0",
-                "B. 1個目のprintが0で、2個目のprintが2",
-                "C. 1個目のprintが0で、2個目のprintが0",
-                "D. 1個目のprintが2で、2個目のprintが2",
-            ];
-            var ans9s = [
-                "A. 0.5",
-                "B. 0.0",
-                "C. 0",
-                "D. コンパイルエラー"
-            ];
-            var ans10s = [
-                "A. 追試",
-                "B. 可",
-                "C. 追試不可",
-                "D. 何も出力されない"
-            ];
-
-            var startEnd = "<h2>サンプルテスト<h2>";
-            var url = window.CONTROLE_GROUP ? "https://goo.gl/forms/56yyzwunyQrxlWPA3" : "https://goo.gl/forms/5SOs629lTOVNlIIY2";
-            var endEnd = "<h2>学習お疲れ様でした！学習は終了となりますので、終了時刻をメモしてください！</h2>続いて" +
-                    "<a href='https://goo.gl/forms/IXrjFarZkQEAAdMD3'>学習効果の評価テスト</a>と" +
-                    "<a href='" + url + "'>アンケート</a>にお答えください。<br>"+
-                    "なお、評価テストに取り組む際は、すべての資料や本学習環境、XCodeなどの実行環境のご利用はお控えください。";
-            showCurrentTask('Q0');
-
-            function showAnswers(questionNum) {
-                if (questionNum == 0) {
-                    document.getElementById('A').innerHTML = ans1s[0];
-                    document.getElementById('B').innerHTML = ans1s[1];
-                    document.getElementById('C').innerHTML = ans1s[2];
-                    document.getElementById('D').innerHTML = ans1s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz1AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[0];
-                } else if (questionNum == 1) {
-                    document.getElementById('A').innerHTML = ans2s[0];
-                    document.getElementById('B').innerHTML = ans2s[1];
-                    document.getElementById('C').innerHTML = ans2s[2];
-                    document.getElementById('D').innerHTML = ans2s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz2AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[1];
-                } else if (questionNum == 2) {
-                    document.getElementById('A').innerHTML = ans3s[0];
-                    document.getElementById('B').innerHTML = ans3s[1];
-                    document.getElementById('C').innerHTML = ans3s[2];
-                    document.getElementById('D').innerHTML = ans3s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz3AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[2];
-                } else if (questionNum == 3) {
-                    document.getElementById('A').innerHTML = ans4s[0];
-                    document.getElementById('B').innerHTML = ans4s[1];
-                    document.getElementById('C').innerHTML = ans4s[2];
-                    document.getElementById('D').innerHTML = ans4s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz4AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[3];
-                } else if (questionNum == 4) {
-                    document.getElementById('A').innerHTML = ans5s[0];
-                    document.getElementById('B').innerHTML = ans5s[1];
-                    document.getElementById('C').innerHTML = ans5s[2];
-                    document.getElementById('D').innerHTML = ans5s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz5AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[4];
-                } else if (questionNum == 5) {
-                    document.getElementById('A').innerHTML = ans6s[0];
-                    document.getElementById('B').innerHTML = ans6s[1];
-                    document.getElementById('C').innerHTML = ans6s[2];
-                    document.getElementById('D').innerHTML = ans6s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz6AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[5];
-                } else if (questionNum == 6) {
-                    document.getElementById('A').innerHTML = ans7s[0];
-                    document.getElementById('B').innerHTML = ans7s[1];
-                    document.getElementById('C').innerHTML = ans7s[2];
-                    document.getElementById('D').innerHTML = ans7s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz7AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[6];
-                } else if (questionNum == 7) {
-                    document.getElementById('A').innerHTML = ans8s[0];
-                    document.getElementById('B').innerHTML = ans8s[1];
-                    document.getElementById('C').innerHTML = ans8s[2];
-                    document.getElementById('D').innerHTML = ans8s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz8AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[7];
-                } else if (questionNum == 8) {
-                    document.getElementById('A').innerHTML = ans9s[0];
-                    document.getElementById('B').innerHTML = ans9s[1];
-                    document.getElementById('C').innerHTML = ans9s[2];
-                    document.getElementById('D').innerHTML = ans9s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz9AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[8];
-                } else if (questionNum == 9) {
-                    document.getElementById('A').innerHTML = ans10s[0];
-                    document.getElementById('B').innerHTML = ans10s[1];
-                    document.getElementById('C').innerHTML = ans10s[2];
-                    document.getElementById('D').innerHTML = ans10s[3];
-                    document.getElementById('ansImg').src="@routes.Assets.versioned("images/quiz10AnsBoth.png")";
-                    document.getElementById('ansWord').innerHTML = ansNoTranslation[9];
+                function showCurrentText(textNum, updateHash){
+                    if(!textStrings){
+                        setText();
+                    }
+                    localStorage.currentText = textNum;
+                    if(updateHash){
+                        location.hash = textNum;
+                    }
+                    var type = textNum[0];
+                    var index = parseInt(textNum.substring(1));
+                    if (type == 'E') {
+                        document.getElementById('title').innerHTML = endEnd;
+                        document.getElementById('similarity').innerHTML = "続いて<u><b>新しいタブ</b></u>にテストとアンケートを開いてください。<br>" +
+                        "<a href='https://goo.gl/forms/ffZjJdtm92oPYG7v1'>学習効果の評価テスト</a>と" +
+                        "<a href='" + url + "'>アンケート</a>にお答えください。<br>"
+                        document.getElementById('textString').innerHTML = '';
+                        document.getElementById('source').innerHTML='';
+                        localStorage.currentText = 'E';
+                        makeExprDataString(exprData);
+                        document.getElementById('finish').style.visibility="visible";
+                        document.getElementById('finish').style.display="block";
+//                        alert(exprDataString);
+                    } else if (type == 'T') {
+                        var element = textStrings[index];
+                        document.getElementById('title').innerHTML = element[0];
+                        document.getElementById('similarity').innerHTML = element[1];
+                        document.getElementById('textString').innerHTML = element[2];
+                        document.getElementById('source').innerHTML = element[3];
+                        document.getElementById('finish').style.visibility="hidden";
+                        document.getElementById('finish').style.display="none";
+                    }
                 }
-            }
-
-            $('#next').on('click', function () {
-                var code = nextCode(localStorage.currentCode);
-                showCurrentTask(code, true);
-            });
-            $('#prev').on('click', function () {
-                var code = prevCode(localStorage.currentCode);
-                showCurrentTask(code, true);
-
-            })
-            $(function() {
-                var hash = location.hash;
-                if (hash) {
-                    var code = hash.substring(1);
-                    showCurrentTask(code);
+                function saveData(textNum, time){
+                    // input to exprData
+                    var key = textNum;
+                    var sec = calculateSec(time);
+                    if(exprData[key]!=null){
+                        var originSec = exprData[key];
+                        //add time
+                        var sec = sec + originSec;
+                    }
+                    exprData[key] = sec;
                 }
-            });
 
-            function nextCode(code) {
-              var type = code[0];
-              var index = parseInt(code.substring(1)) | 0;
-
-              if (type == 'S') {
-                return 'Q0';
-              }
-              if (type == 'Q' && index == questions.length - 1) {
-                return 'T0';
-              }
-              if (type == 'T' && index == tasks.length - 1) {
-                return 'E';
-              }
-              return type + (index + 1);
-
-            }
-
-            function prevCode(code) {
-                var type = code[0];
-                var index = parseInt(code.substring(1)) | 0;
-
-                if (type == 'Q' && index == 0) {
-                    return 'Q0';
+                function calculateSec(time){
+                    var timeArr = time.split(":");
+                    var min = parseInt(timeArr[0])
+                    var sec = parseInt(timeArr[1]);
+                    var result = min*60 + sec;
+                    return result;
                 }
-                if (type == 'T' && index == 0) {
-                    return 'Q' + (questions.length - 1);
+                function makeExprDataString(exprData){
+                    for(var key in exprData) {
+                        var value = exprData[key];
+                        eachElement = key+":"+value;
+                        exprDataString = exprDataString + eachElement +","
+//                        alert(key+", "+value);
+                    }
                 }
-                if (type == 'E') {
-                    return 'T' + (tasks.length - 1);
-                }
-                return type + (index - 1);
-            }
-
-            function showCurrentTask(code, updateHash) {
-                localStorage.currentCode = code;
-                if (updateHash) {
-                    location.hash = code;
-                }
-                var type = code[0];
-                var index = parseInt(code.substring(1));
-
-                $('#answer').hide();
-                $('#ansWord').hide();
-                if (type == 'S') {
-                    document.getElementById('quiz').innerHTML = startEnd;
-                    localStorage.currentTask = startEnd;
-
-                    $('#choices').hide();
-                    $('#editorAnswer').hide();
-                    $('#submit').hide();
-                } else if (type == 'E') {
-                    document.getElementById('quiz').innerHTML = endEnd;
-                    localStorage.currentTask = endEnd;
-
-                    $('#choices').hide();
-                    $('#editorAnswer').hide();
-                    $('#submit').hide();
-                } else if (type == 'Q') {
-                    document.getElementById('quiz').innerHTML = questions[index];
-                    localStorage.currentTask = questions[index];
-
-                    $('#choices').show();
-                    $('#editorAnswer').hide();
-                    showAnswers(index);
-                } else if (type == 'T') {
-                    document.getElementById('quiz').innerHTML = tasks[index];
-                    localStorage.currentTask = tasks[index];
-
-                    $('#choices').hide();
-                    $('#editorAnswer').show();
-                    $('#submit').show();
-                    setTaskAnswers(index);
-                }
-            }
-
-            function setTaskAnswers(taskNum) {
-                if (localStorage.currentTask == tasks[0]) {
-                    document.getElementById('ansImg').src = "@routes.Assets.versioned("images/task1Ans.png")";
-                } else if (localStorage.currentTask == tasks[1]) {
-                    document.getElementById('ansImg').src = "@routes.Assets.versioned("images/task2Ans.png")";
-                } else if (localStorage.currentTask == tasks[2]) {
-                    document.getElementById('ansImg').src = "@routes.Assets.versioned("images/task3Ans.png")";
-                } else if (localStorage.currentTask == tasks[3]) {
-                    document.getElementById('ansImg').src = "@routes.Assets.versioned("images/task4Ans.png")";
-                }
-            }
-            function createEditor(idName, canWrite, initText, mode, AnsEditor) {
-                var editor = ace.edit(idName);
-                if (canWrite) {
-                    editor.$blockScrolling = Infinity;
-                    editor.setOptions({
-                        enableBasicAutocompletion: true,//基本的な自動補完
-                        enableSnippets: true,//スニペット
-                        enableLiveAutocompletion: true//ライブ補完
-                    });
-                }
-                editor.setTheme("ace/theme/monokai");
-                editor.getSession().setMode("ace/mode/" + mode);//シンタックスハイライトと自動補完
-                //editor.getSession().setUseWrapMode(true);//true:折り返し、false:横スクロールバー
-                //2の場合編集不可能オプションをtrueにしたい。ｌ
+                $('#finish').click(function(){
+//                    alert(exprId);
+                    var userInfo = exprId+"-"+exprDataString;
+                    var form = document.createElement('form');
+                    document.body.appendChild(form);
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'hidden');
+                    input.setAttribute('name', 'name');
+                    input.setAttribute('value', userInfo);
+                    form.appendChild(input);
+                    form.setAttribute('action', '/converter/end');
+                    form.setAttribute('method', 'POST');
+                    form.submit();
+                })
+                function createEditor(idName, canWrite, initText, mode, AnsEditor) {
+                    var editor = ace.edit(idName);
+                    if (canWrite) {
+                        editor.$blockScrolling = Infinity;
+                        editor.setOptions({
+                            enableBasicAutocompletion: true,//基本的な自動補完
+                            enableSnippets: true,//スニペット
+                            enableLiveAutocompletion: true//ライブ補完
+                        });
+                    }
+                    editor.setTheme("ace/theme/monokai");
+                    editor.getSession().setMode("ace/mode/" + mode);//シンタックスハイライトと自動補完
+                    //editor.getSession().setUseWrapMode(true);//true:折り返し、false:横スクロールバー
+                    //2の場合編集不可能オプションをtrueにしたい。ｌ
 //                $('#font-size').click(function (e) {
 //                    editor.setFontSize($(e.target).data('size'));
 //                });
-                editor.setReadOnly(!canWrite);
-                if (canWrite) {
-                    $('#exec').click(function (e) {
-                        var form = document.createElement('form');
-                        document.body.appendChild(form);
-                        var input = document.createElement('input');
-                        input.setAttribute('type', 'hidden');
-                        input.setAttribute('name', 'name');
-                        var text = editor.getValue();
-//                    text = text.split(`"`).join(`"`);
-
-                        if (idName == 'editorMain') {
-                            if (AnsEditor != null) {
-                                localStorage.textSwiftAns = AnsEditor.getValue();
+                    editor.setReadOnly(!canWrite);
+                    if (canWrite) {
+                        $('#exec').click(function (e) {
+                            var form = document.createElement('form');
+                            document.body.appendChild(form);
+                            var input = document.createElement('input');
+                            input.setAttribute('type', 'hidden');
+                            input.setAttribute('name', 'name');
+                            var text = editor.getValue();
+                            if (idName == 'editorMain') {
+                                if (AnsEditor != null) {
+                                    localStorage.textSwiftAns = AnsEditor.getValue();
+                                }
+                                localStorage.textJavaMain = text;
+                                input.setAttribute('value', text);
+                                form.appendChild(input);
+                                form.setAttribute('action', '/converter' + location.hash);
+                                form.setAttribute('method', 'POST');
+                                form.submit();
                             }
-                            localStorage.textJavaMain = text;
-                            input.setAttribute('value', text);
-                            form.appendChild(input);
-                            form.setAttribute('action', '/converter' + location.hash);
-                            form.setAttribute('method', 'POST');
-                            form.submit();
-
-                        }
-                    });
+                        });
+                    }
+                    if (initText != null && initText != '')
+                        editor.setValue(initText, -1);
+                    return editor;
                 }
-
-                if (initText != null && initText != '')
-                    editor.setValue(initText, -1);
-                return editor;
-            }
-            var mes = `@Html(message)`;
-            var mes1 = mes.replace(/<br>/g, `
+                var mes = `@Html(message)`;
+                var mes1 = mes.replace(/<br>/g, `
 `) ;
-            var mes2 = mes.replace(/<br>/g, `
+                var mes2 = mes.replace(/<br>/g, `
 //`) ;
-            if (mes2 == "NULL_POINTER") {
-                alert("Error in the Java Program");
-                mes2 = "";
-            }
+                if (mes2 == "NULL_POINTER") {
+                    alert("Error in the Java Program");
+                    mes2 = "";
+                }
+                var defaultJavaCode =
+                        'public class Main {\n' +
+                        '    public static void main(String[] args) {\n' +
+                        '        System.out.println("Hello, world");\n' +
+                        '    }\n' +
+                        '}\n';
+                //            var editorAnswer = createEditor('editorAnswer', true, localStorage.textSwiftAns, "swift", null);
+                //            var editorMain = createEditor('editorMain', true, localStorage.textJavaMain || defaultJavaCode, "java", editorAnswer);
+                var editorMain = createEditor('editorMain', true, localStorage.textJavaMain || defaultJavaCode, "java", null);
+                var editorResult = createEditor('editorResult', false, mes2, "swift", null);
+        </script>
+        <script>
+                function pad0(value, count) {
+                    var result = value.toString();
+                    for (; result.length < count; --count)
+                        result = '0' + result;
+                    return result;
+                }
+                function clearChildren(node) {
+                    while (node.lastChild)
+                        node.removeChild(node.lastChild);
+                }
+                let stopwatch = new Stopwatch(
+                        document.querySelector('.stopwatch'),
+                        document.querySelector('.results'));
+        </script>
 
-            var defaultJavaCode =
-                    'public class Main {\n' +
-                    '    public static void main(String[] args) {\n' +
-                    '        System.out.println("Hello, world");\n' +
-                    '    }\n' +
-                    '}\n';
-
-            var editorAnswer = createEditor('editorAnswer', true, localStorage.textSwiftAns, "swift", null);
-            var editorMain = createEditor('editorMain', true, localStorage.textJavaMain || defaultJavaCode, "java", editorAnswer);
-            var editorResult = createEditor('editorResult', false, mes2, "swift", null);
-    </script>
-}
+    }

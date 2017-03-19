@@ -33,3 +33,4 @@ POST    /visualizer/stop            controllers.VisualizerController.stopDebug
 GET     /converter                  controllers.ConverterController.index
 GET     /converterIndex             controllers.ConverterController.exIndex
 POST    /converter                  controllers.ConverterController.compile
+POST    /converter/end              controllers.ConverterController.insertDBContent

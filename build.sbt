@@ -12,8 +12,8 @@ libraryDependencies ++= Seq(
   ws,
   "net.arnx" % "jsonic" % "1.3.10",
   "com.github.UnicoenProject" % "Junicoen" % "bde5ab14ae0a5696214acdd5a6c994409414a72d",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
-//  "mysql" % "mysql-connector-java" % "5.1.36"
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
+  "mysql" % "mysql-connector-java" % "5.1.36"
 )
 
 resolvers += "jitpack.io" at "https://jitpack.io"

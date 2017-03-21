@@ -14,7 +14,9 @@ import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import scala.collection._
 import models._
-import java.nio.charset.Charset;
+import java.nio.charset.Charset
+
+import play.api.libs.json.JsObject;
 
 //import net.unicoen._
 //import net.unicoen.node._
@@ -52,7 +54,7 @@ class VisualizerController @Inject() extends Controller {
     val stateHistory = new util.ArrayList[String]
     val outputsHistory = new util.ArrayList[String]
     var textOnEditor = ""
-    val form = Form("name" -> text)
+    var isFirstEOF = false
   }
   val fields = new util.LinkedHashMap[String,Fields]
 
@@ -80,14 +82,6 @@ class VisualizerController @Inject() extends Controller {
     Ok(views.html.visualizer("experimant 4","ex4","",""))
   }
 
-  def compile = Action { implicit request =>
-    val uuid = reset(request.session)
-    getfield(uuid).textOnEditor = getfield(uuid).form.bindFromRequest.get
-    val treeData = rawDataToUniTree(getfield(uuid).textOnEditor)
-    val jsonData = net.arnx.jsonic.JSON.encode(treeData)
-    Ok(views.html.visualizer(jsonData,"compile","",getfield(uuid).textOnEditor))
-  }
-
 
 
   def flatten(list:util.List[Object]):util.ArrayList[UniNode]={
@@ -108,13 +102,143 @@ class VisualizerController @Inject() extends Controller {
 
 
 
+
   def ajaxCall = Action { implicit request =>
-      Ok(Json.stringify(request.body.asJson.get))
+    var jsonObj = request.body.asJson.get
+    val stackData = (jsonObj \ "stackData").as[String]
+    val debugState = (jsonObj \ "debugState").as[String]
+    val output = (jsonObj \ "output").as[String]
+    val sourcetext = (jsonObj \ "sourcetext").as[String]
+    debugState match {
+      case "debug" => {
+        val uuid = reset(request.session)
+        getfield(uuid).textOnEditor = sourcetext
+        val node = rawDataToUniTree(getfield(uuid).textOnEditor)
+        var nodes = new util.ArrayList[UniNode]
+        if(node.isInstanceOf[util.ArrayList[UniNode]]){
+          nodes = flatten(node.asInstanceOf[util.List[Object]])
+        }
+        else{
+          nodes += node.asInstanceOf[UniNode]
+        }
+        val state = getfield(uuid).engine.startStepExecution(nodes)
+        val jsonData = getJson(state,uuid)
+        val output = getOutput(uuid)
+        val json = Json.obj(
+          "stackData" -> jsonData,
+          "debugState" -> "in Debugging",
+          "output" -> output,
+          "sourcetext" -> sourcetext
+        )
+        Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+      }
+      case "exec" => {
+        val uuid = request.session.get("uuid").get
+        var state : ExecState = null
+        while (getfield(uuid).engine.isStepExecutionRunning())
+        {
+          getfield(uuid).count += 1
+          state = getfield(uuid).engine.stepExecute()
+          val jsonData = getJson(state,uuid)
+          val encOutput = getOutput(uuid)
+        }
+        getfield(uuid).count = getfield(uuid).stateHistory.length - 1
+        val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
+        val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
+        val json = Json.obj(
+          "stackData" -> jsonData,
+          "debugState" -> "EOF",
+          "output" -> output,
+          "sourcetext" -> sourcetext
+        )
+        Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+      }
+      case "reset" => {
+        val uuid = request.session.get("uuid").get
+        getfield(uuid).count = 0
+        val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
+        val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
+        val json = Json.obj(
+          "stackData" -> jsonData,
+          "debugState" -> ("Step:"+ getfield(uuid).count.toString),
+          "output" -> output,
+          "sourcetext" -> sourcetext
+        )
+        Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+      }
+      case "step" => {
+        val uuid=request.session.get("uuid").get
+        getfield(uuid).count += 1
+        if(getfield(uuid).count < getfield(uuid).stateHistory.length - 1){
+          val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
+          val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
+          val json = Json.obj(
+            "stackData" -> jsonData,
+            "debugState" -> ("Step:"+ getfield(uuid).count.toString),
+            "output" -> output,
+            "sourcetext" -> sourcetext
+          )
+          Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+        }
+        else if(getfield(uuid).engine.isStepExecutionRunning()) {
+          var state = getfield(uuid).engine.stepExecute()
+          while (state.getCurrentExpr().codeRange==null){
+            state = getfield(uuid).engine.stepExecute()
+          }
+          val jsonData = getJson(state,uuid)
+          val output = getOutput(uuid)
+          val json = Json.obj(
+            "stackData" -> jsonData,
+            "debugState" -> ("Step:"+ getfield(uuid).count.toString),
+            "output" -> output,
+            "sourcetext" -> sourcetext
+          )
+          Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+        }
+        else{
+          getfield(uuid).count = getfield(uuid).stateHistory.length - 1
+          val json = Json.obj(
+            "stackData" -> getfield(uuid).stateHistory.last,
+            "debugState" -> "EOF",
+            "output" -> "",
+            "sourcetext" -> sourcetext
+          )
+          Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+        }
+      }
+      case "back" => {
+        val uuid = request.session.get("uuid").get
+        if(1<=getfield(uuid).count){
+          getfield(uuid).count -= 1
+        }
+        val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
+        val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
+        val json = Json.obj(
+          "stackData" -> jsonData,
+          "debugState" -> ("Step:"+ getfield(uuid).count.toString),
+          "output" -> output,
+          "sourcetext" -> sourcetext
+        )
+        Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+      }
+      case "stop" => {
+        val uuid = request.session.get("uuid").get
+        getfield(uuid).engine = null
+        val json = Json.obj(
+          "stackData" -> getfield(uuid).stateHistory.last,
+          "debugState" -> "STOP",
+          "output" -> "",
+          "sourcetext" -> sourcetext
+        )
+        Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+      }
+      case _ => Ok(Json.stringify(request.body.asJson.get))
     }
+  }
 
   def startStepExec = Action { implicit request =>
     val uuid = reset(request.session)
-    getfield(uuid).textOnEditor = getfield(uuid).form.bindFromRequest.get
+    //getfield(uuid).textOnEditor = getfield(uuid).form.bindFromRequest.get
     val node = rawDataToUniTree(getfield(uuid).textOnEditor)
     var nodes = new util.ArrayList[UniNode]
     if(node.isInstanceOf[util.ArrayList[UniNode]]){

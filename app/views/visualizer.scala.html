@@ -33,17 +33,17 @@
             @*<button id="bold" class="btn btn-default"><i class="glyphicon glyphicon-bold"></i></button>*@
             @*<button id="save" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i></button>*@
             @*<button id="load" class="btn btn-default"><i class="glyphicon glyphicon-folder-open"></i></button>*@
-            <button id="compile" class="btn btn-default"><i class="glyphicon glyphicon-repeat"></i></button> @*コンパイルしてメッセージ出力*@
             <button id="debug" title="可視化デバッグ実行開始(最初に1回必ず押す)" class="btn btn-default"><i class="glyphicon glyphicon-play"></i></button>@*コンパイル済みならデバッグ開始*@
+            <button id="reset" title="実行中のプログラムを最初に戻す" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>@*コンパイル済みならデバッグ開始*@
             <button id="exec" title="実行中のプログラムを最後まで実行する" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button> @*コンパイル済みなら実行*@
             <button id="step" title="次の式を実行する(次に実行する式をハイライト)" class="btn btn-default"><i class="glyphicon glyphicon-arrow-down"></i></button>@*デバッグ開始済みなら1ステップ進む*@
             <button id="back" title="前の式に戻る" class="btn btn-default"><i class="glyphicon glyphicon-arrow-up"></i></button>@*デバッグ開始済みなら1ステップ戻る*@
-            <button id="stop" title="可視化デバッグ終了" class="btn btn-default"><i class="glyphicon glyphicon-stop"></i></button>@*デバッグ中なら停止*@
+            @*<button id="stop" title="可視化デバッグ終了" class="btn btn-default"><i class="glyphicon glyphicon-stop"></i></button>*@@*デバッグ中なら停止*@
         </div>
     </div>
     <div clsee="row">
         <div class="col-lg-6 col-md-6">
-            DebugStatus:@Html(debugState)<br>
+            <div id="debugStatus">DebugStatus:</div><br>
             <button id="exstart">実験開始</button>
             <button id="exans">答えを確認</button>
             <br>
@@ -362,50 +362,24 @@ int main()
                 editor.setReadOnly(!canWrite);
                 if (canWrite) {
 
-                    function send(sendText,action,method){
-                        var form = document.createElement('form');
-                        document.body.appendChild(form);
-                        var input = document.createElement('input');
-                        input.setAttribute('type', 'hidden');
-                        input.setAttribute('name', 'name');
-                        input.setAttribute('value', sendText);
-                        localStorage.sourcefile = sendText;
-                        form.appendChild(input);
-                        form.setAttribute('action', '/visualizer'+action);
-                        form.setAttribute('method', method);
-                        form.submit();
-
+                    function send(jsondata){
+                        $.ajax({
+                            url:"@routes.VisualizerController.ajaxCall",//先ほどのActionを指定
+                            type:'POST',
+                            data:JSON.stringify(jsondata),//JSON.stringifyを忘れない
+                            dataType:'json',
+                            contentType:'text/json',
+                            timeout:10000,
+                            success: function(data) {
+                                //alert("ok");
+                                document.getElementById("debugStatus").innerHTML = "DebugStatus:" + data.debugState;
+                                drawVisualizedResult(data);
+                            },
+                            error: function(data) {
+                                alert("invalid data");
+                            }
+                        });
                     }
-                    $('#compile').click(function () {
-                        var text =editor.getValue();
-                        if(text.length<=1){
-                            alert("ソースコードがありません！")
-                        }
-                        else
-                        {
-                            var jsondata = { //送りたいJSONデータ
-                                "text": text
-                            };
-                            $.ajax({
-                                url:"@routes.VisualizerController.ajaxCall",//先ほどのActionを指定
-                                type:'POST',
-                                data:JSON.stringify(jsondata),//JSON.stringifyを忘れない
-                                dataType:'json',
-                                contentType:'text/json',
-                                timeout:10000,
-                                success: function(data) {
-                                    alert(data.text);
-                                },
-                                error: function(data) {
-                                    alert("ng");
-                                }
-                            });
-                            localStorage.sourcefile = text;
-                            localStorage.line = 0;
-                            localStorage.debug="true";
-                        }
-
-                    });
                     $('#debug').click(function (e) {
                         var text =editor.getValue();
                         if(text.length<=1){
@@ -413,15 +387,40 @@ int main()
                         }
                         else
                         {
-                            send(text,'/debug','POST');
+                            var jsondata = { //送りたいJSONデータ
+                                "stackData": "",
+                                "debugState": "debug",
+                                "output": "",
+                                "sourcetext": text
+                            };
+                            send(jsondata);
                             localStorage.line = 0;
                             localStorage.debug="true";
                         }
                     });
-
+                    $('#reset').click(function (e) {
+                        if(localStorage.debug=="true"){
+                            var jsondata = { //送りたいJSONデータ
+                                "stackData": "",
+                                "debugState": "reset",
+                                "output": "",
+                                "sourcetext": editor.getValue()
+                            };
+                            send(jsondata);
+                        }
+                        else{
+                            alert("デバッグ開始ボタンを押してください");
+                        }
+                    });
                     $('#exec').click(function (e) {
                         if(localStorage.debug=="true"){
-                            send(editor.getValue(),'/exec','POST');
+                            var jsondata = { //送りたいJSONデータ
+                                "stackData": "",
+                                "debugState": "exec",
+                                "output": "",
+                                "sourcetext": editor.getValue()
+                            };
+                            send(jsondata);
                         }
                         else{
                             alert("デバッグ開始ボタンを押してください");
@@ -430,7 +429,13 @@ int main()
 
                     $('#step').click(function (e) {
                         if(localStorage.debug=="true"){
-                            send(editor.getValue(),'/step','POST');
+                            var jsondata = { //送りたいJSONデータ
+                                "stackData": "",
+                                "debugState": "step",
+                                "output": "",
+                                "sourcetext": editor.getValue()
+                            };
+                            send(jsondata);
                         }
                         else{
                             alert("デバッグ開始ボタンを押してください");
@@ -438,7 +443,13 @@ int main()
                     });
                     $('#back').click(function (e) {
                         if(localStorage.debug=="true"){
-                            send(editor.getValue(),'/back','POST');
+                            var jsondata = { //送りたいJSONデータ
+                                "stackData": "",
+                                "debugState": "back",
+                                "output": "",
+                                "sourcetext": editor.getValue()
+                            };
+                            send(jsondata);
                         }
                         else{
                             alert("デバッグ開始ボタンを押してください");
@@ -447,7 +458,13 @@ int main()
                     });
                     $('#stop').click(function (e) {
                         if(localStorage.debug=="true"){
-                            send(editor.getValue(),'/stop','POST');
+                            var jsondata = { //送りたいJSONデータ
+                                "stackData": "",
+                                "debugState": "stop",
+                                "output": "",
+                                "sourcetext": editor.getValue()
+                            };
+                            send(jsondata);
                             localStorage.debug="false";
                             localStorage.line = 0;
                         }
@@ -461,11 +478,6 @@ int main()
                     editor.setValue(initText, -1);
                 return editor;
             }
-            /*
-             var mes =`@Html(debugState)`;
-             var mes2 = '// '+ mes.replace( /<br>/g , `
-             //`) ;
-             */
             var text = localStorage.sourcefile;
 
             var editor = createEditor('editorMain',true,text);
@@ -478,26 +490,30 @@ int main()
             outputEditor.setTheme("ace/theme/terminal");
 
             //createEditor('editorResult',false,mes);
-            var treeJson =`@Html(stackData)`;
-            var treeObj = JSON.parse(treeJson);
-            var data = new Array(treeObj);
 
-            if(localStorage.compile=="true") {
-                localStorage.compile="false";
-                alert("compile success");
-            }
+            function drawVisualizedResult(jsondata) {
+                var treeJson = jsondata.stackData;
+                var treeObj = JSON.parse(treeJson);
+                var data = new Array(treeObj);
 
-            if(localStorage.debug=="true"){
-                document.getElementById("exstart").disabled = "true";
-                var Range = require("ace/range").Range;
-                var d = data[0];
-                var codeRange = d.currentExpr.codeRange;
-                if(codeRange) {
-                    var range = new Range(new Number(codeRange.begin.y - 1), new Number(codeRange.begin.x), new Number(codeRange.end.y - 1), new Number(codeRange.end.x + 1));
-                    editor.getSelection().setSelectionRange(range);
+
+                if (localStorage.debug == "true") {
+                    document.getElementById("exstart").disabled = "true";
+                    var Range = require("ace/range").Range;
+                    var d = data[0];
+                    var codeRange = d.currentExpr.codeRange;
+                    if(jsondata.debugState == "EOF"){
+                        var range = new Range(new Number(-1), new Number(0), new Number(-1), new Number(1));
+                        editor.getSelection().setSelectionRange(range);
+                    }
+                    else if (codeRange) {
+                        var range = new Range(new Number(codeRange.begin.y - 1), new Number(codeRange.begin.x), new Number(codeRange.end.y - 1), new Number(codeRange.end.x + 1));
+                        editor.getSelection().setSelectionRange(range);
+
+                    }
+                    outputEditor.setValue(jsondata.output, -1);
+                    drawMemoryState(d);
                 }
-                outputEditor.setValue(`@(output)`, -1);
-                drawMemoryState(d);
             }
 
     </script>

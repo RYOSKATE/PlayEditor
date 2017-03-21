@@ -109,15 +109,8 @@ class VisualizerController @Inject() extends Controller {
 
 
   def ajaxCall = Action { implicit request =>
-    Ok("Got request [" + request + "]")
-//    val aaa = "Ajax Call!"
-//    if(request.body.asText.isDefined){
-//      Ok(request.body.asText.get)
-//    }
-//    else {
-//      Ok("No contents")
-//    }
-  }
+      Ok(Json.stringify(request.body.asJson.get))
+    }
 
   def startStepExec = Action { implicit request =>
     val uuid = reset(request.session)

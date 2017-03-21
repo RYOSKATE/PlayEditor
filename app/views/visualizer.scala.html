@@ -383,14 +383,18 @@ int main()
                         }
                         else
                         {
+                            var jsondata = { //送りたいJSONデータ
+                                "text": text
+                            };
                             $.ajax({
-                                url: '/visualizer/ajaxCall',
-                                type:'GET',
-                                data: { source: text },
-                                //dataType: 'json',
+                                url:"@routes.VisualizerController.ajaxCall",//先ほどのActionを指定
+                                type:'POST',
+                                data:JSON.stringify(jsondata),//JSON.stringifyを忘れない
+                                dataType:'json',
+                                contentType:'text/json',
                                 timeout:10000,
                                 success: function(data) {
-                                    alert(data);
+                                    alert(data.text);
                                 },
                                 error: function(data) {
                                     alert("ng");

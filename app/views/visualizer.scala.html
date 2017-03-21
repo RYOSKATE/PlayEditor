@@ -18,6 +18,7 @@
     @*
     @play20.welcome(message, style = "Scala")
     *@
+
     可視化デバッグ用ボタン
     <div clsee="row">
         <div class="btn-group">
@@ -32,7 +33,7 @@
             @*<button id="bold" class="btn btn-default"><i class="glyphicon glyphicon-bold"></i></button>*@
             @*<button id="save" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i></button>*@
             @*<button id="load" class="btn btn-default"><i class="glyphicon glyphicon-folder-open"></i></button>*@
-            @*<button id="compile" class="btn btn-default"><i class="glyphicon glyphicon-repeat"></i></button> *@@*コンパイルしてメッセージ出力*@
+            <button id="compile" class="btn btn-default"><i class="glyphicon glyphicon-repeat"></i></button> @*コンパイルしてメッセージ出力*@
             <button id="debug" title="可視化デバッグ実行開始(最初に1回必ず押す)" class="btn btn-default"><i class="glyphicon glyphicon-play"></i></button>@*コンパイル済みならデバッグ開始*@
             <button id="exec" title="実行中のプログラムを最後まで実行する" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button> @*コンパイル済みなら実行*@
             <button id="step" title="次の式を実行する(次に実行する式をハイライト)" class="btn btn-default"><i class="glyphicon glyphicon-arrow-down"></i></button>@*デバッグ開始済みなら1ステップ進む*@
@@ -375,10 +376,30 @@ int main()
                         form.submit();
 
                     }
-                    $('#compile').click(function (e) {
-                        send(editor.getValue(),'/compile','POST');
-                        localStorage.line = 0;
-                        localStorage.compile = "true";
+                    $('#compile').click(function () {
+                        var text =editor.getValue();
+                        if(text.length<=1){
+                            alert("ソースコードがありません！")
+                        }
+                        else
+                        {
+                            $.ajax({
+                                url: '/visualizer/ajaxCall',
+                                type:'GET',
+                                data: { source: text },
+                                //dataType: 'json',
+                                timeout:10000,
+                                success: function(data) {
+                                    alert(data);
+                                },
+                                error: function(data) {
+                                    alert("ng");
+                                }
+                            });
+                            localStorage.sourcefile = text;
+                            localStorage.line = 0;
+                            localStorage.debug="true";
+                        }
 
                     });
                     $('#debug').click(function (e) {

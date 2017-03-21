@@ -25,7 +25,7 @@ import net.unicoen.node._
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import play.api.mvc
-
+import play.api.libs.json.Json
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -104,6 +104,19 @@ class VisualizerController @Inject() extends Controller {
       }
     }
     return nodes
+  }
+
+
+
+  def ajaxCall = Action { implicit request =>
+    Ok("Got request [" + request + "]")
+//    val aaa = "Ajax Call!"
+//    if(request.body.asText.isDefined){
+//      Ok(request.body.asText.get)
+//    }
+//    else {
+//      Ok("No contents")
+//    }
   }
 
   def startStepExec = Action { implicit request =>

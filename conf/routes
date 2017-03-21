@@ -23,6 +23,7 @@ GET     /experiment4                 controllers.VisualizerController.ex4
 
 GET     /visualizer                 controllers.VisualizerController.index
 GET     /visualizerIndex            controllers.VisualizerController.exIndex
+GET     /visualizer/ajaxCall        controllers.VisualizerController.ajaxCall
 POST    /visualizer/compile         controllers.VisualizerController.compile
 POST    /visualizer/debug           controllers.VisualizerController.startStepExec
 POST    /visualizer/exec            controllers.VisualizerController.execAll

@@ -3,7 +3,30 @@
  */
 /*可視化領域描画処理*/
 //$(function(){
+window.addEventListener( "load", function() {
+    var container = document.getElementById("canvasContainer"),
+        canvas1 = document.getElementById("display"),
+        queue = null,
+        wait = 300;
 
+    // ページ読込時にCanvasサイズ設定
+    setCanvasSize();
+
+    // リサイズ時にCanvasサイズを再設定
+    window.addEventListener("resize", function() {
+        clearTimeout( queue );
+        queue = setTimeout(function() {
+            setCanvasSize();
+        }, wait );
+    }, false );
+
+    // Canvasサイズをコンテナの100%に
+    function setCanvasSize() {
+        canvas1.width = 0.97 * container.offsetWidth;
+        canvas1.height = 0.95 * window.innerHeight;
+    }
+
+}, false );
 function drawMemoryState(data){
 
     //一度全て削除する

@@ -19,8 +19,10 @@
     @play20.welcome(message, style = "Scala")
     *@
 
-    可視化デバッグ用ボタン
+
     <div clsee="row">
+        <div class="col-lg-6 col-md-6">
+            可視化デバッグ用ボタン
         <div class="btn-group">
             <div class="btn-group">
                 <button title="エディタのフォントサイズ変更" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-search"></i> <span class="caret"></span></button>
@@ -40,9 +42,7 @@
             <button id="back" title="前の式に戻る" class="btn btn-default"><i class="glyphicon glyphicon-arrow-up"></i></button>@*デバッグ開始済みなら1ステップ戻る*@
             @*<button id="stop" title="可視化デバッグ終了" class="btn btn-default"><i class="glyphicon glyphicon-stop"></i></button>*@@*デバッグ中なら停止*@
         </div>
-    </div>
-    <div clsee="row">
-        <div class="col-lg-6 col-md-6">
+
             <div id="debugStatus">DebugStatus:</div><br>
             <button id="exstart">実験開始</button>
             <button id="exans">答えを確認</button>

@@ -19,8 +19,28 @@
     @play20.welcome(message, style = "Scala")
     *@
 
-    可視化デバッグ用ボタン
+
     <div clsee="row">
+        <div class="col-lg-4 col-md-5 col-sm-6 col-xs-12">
+            <a href="#popup1" class="popup_btn">ツール説明</a>
+            <div id="popup1" class="popup">
+                <div class="popup_inner">
+                    <h4>ツール説明</h4>
+                    <p>下のエディタにプログラムを書き、上のボタンを押すことで可視化実行ができます。</p>
+                    <p>(マウスカーソルを重ねるとで各ボタンの説明が表示されます。)</p>
+                    <p>実験前にデフォルトで表示されているプログラムをステップ実行して、</p>
+                    <p>どう可視化されるか確認してみてください。</p>
+                    <p>十分に確認できたらページ下部のボタンでトップページに戻れます。</p>
+                    <p>実験1,2,3,4を順に実施してください。</p>
+                    <p>もしExecution exceptionと書いてある真っ赤な画面になったらごめんなさい。</p>
+                    <p>ツールのバグです。ブラウザの戻るボタンを押してください。</p>
+
+                    <div>
+                        <a href="#close_btn" class="close_btn">閉じる</a>
+                    </div>
+                </div>
+            </div>
+            <div id="overlay"></div>
         <div class="btn-group">
             <div class="btn-group">
                 <button title="エディタのフォントサイズ変更" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-search"></i> <span class="caret"></span></button>
@@ -40,20 +60,18 @@
             <button id="back" title="前の式に戻る" class="btn btn-default"><i class="glyphicon glyphicon-arrow-up"></i></button>@*デバッグ開始済みなら1ステップ戻る*@
             @*<button id="stop" title="可視化デバッグ終了" class="btn btn-default"><i class="glyphicon glyphicon-stop"></i></button>*@@*デバッグ中なら停止*@
         </div>
-    </div>
-    <div clsee="row">
-        <div class="col-lg-6 col-md-6">
+
             <div id="debugStatus">DebugStatus:</div><br>
             <button id="exstart">実験開始</button>
             <button id="exans">答えを確認</button>
             <br>
             <div id="description"></div>
-            <div id="editorMain" style="height: 500px"></div>
+            <div id="editorMain" style="height: 80%"></div>
             output
-            <div id="output" style="height: 100px"></div>
+            <div id="output" style="height: 22%"></div>
         </div>
-        <div class="col-lg-6 col-md-6">
-            <canvas id="display" width="600px" height="720px"></canvas>
+        <div id="canvasContainer" class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
+            <canvas id="display" style="width: 100%;height: 95vh; border: 1px black solid"></canvas>
         </div>
 
         @*<div class="col-lg-12 col-md-12">*@
@@ -165,7 +183,7 @@ int main(){
             if(localStorage.currentex == ""){
                 document.getElementById("exstart").style.display = "none";
                 document.getElementById("exans").style.display = "none";
-                document.getElementById("description").innerHTML = "下のエディタにプログラムを書き、上のボタンを押すことで可視化実行ができます。<br>(マウスカーソルを重ねるとで各ボタンの説明が表示されます。)<br>実験前にデフォルトで表示されているプログラムをステップ実行して、<br>どう可視化されるか確認してみてください。<br>十分に確認できたらページ下部のボタンでトップページに戻れます。実験を開始してください<br>もしExecution exceptionと書いてある真っ赤な画面になったらごめんなさい。<br>ツールのバグです。ブラウザの戻るボタンを押してください。";
+                //document.getElementById("description").innerHTML = "下のエディタにプログラムを書き、上のボタンを押すことで可視化実行ができます。<br>(マウスカーソルを重ねるとで各ボタンの説明が表示されます。)<br>実験前にデフォルトで表示されているプログラムをステップ実行して、<br>どう可視化されるか確認してみてください。<br>十分に確認できたらページ下部のボタンでトップページに戻れます。実験を開始してください<br>もしExecution exceptionと書いてある真っ赤な画面になったらごめんなさい。<br>ツールのバグです。ブラウザの戻るボタンを押してください。";
                 localStorage.startTime = "";
             }
             else  if(localStorage.currentex == "ex1" || localStorage.currentex == "ex2" || localStorage.currentex == "ex3" || localStorage.currentex == "ex4") {
@@ -363,6 +381,9 @@ int main()
                 if (canWrite) {
 
                     function send(jsondata){
+                        if(jsondata.debugState=="debug"){
+                            dispLoading("コンパイル中...");
+                        }
                         $.ajax({
                             url:"@routes.VisualizerController.ajaxCall",//先ほどのActionを指定
                             type:'POST',
@@ -377,8 +398,31 @@ int main()
                             },
                             error: function(data) {
                                 alert("invalid data");
+                            },
+                            complete : function(data) {
+                                // Loadingイメージを消す
+                                removeLoading();
                             }
                         });
+                    }
+                    // Loadingイメージ表示関数
+                    function dispLoading(msg){
+                        // 画面表示メッセージ
+                        var dispMsg = "";
+
+                        // 引数が空の場合は画像のみ
+                        if( msg != "" ){
+                            dispMsg = "<div class='loadingMsg'>" + msg + "</div>";
+                        }
+                        // ローディング画像が表示されていない場合のみ表示
+                        if($("#loading").size() == 0){
+                            $("body").append("<div id='loading'>" + dispMsg + "</div>");
+                        }
+                    }
+
+                    // Loadingイメージ削除関数
+                    function removeLoading(){
+                        $("#loading").remove();
                     }
                     $('#debug').click(function (e) {
                         var text =editor.getValue();

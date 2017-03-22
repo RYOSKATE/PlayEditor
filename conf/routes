@@ -23,12 +23,14 @@ GET     /experiment4                 controllers.VisualizerController.ex4
 
 GET     /visualizer                 controllers.VisualizerController.index
 GET     /visualizerIndex            controllers.VisualizerController.exIndex
-POST    /visualizer/compile         controllers.VisualizerController.compile
-POST    /visualizer/debug           controllers.VisualizerController.startStepExec
-POST    /visualizer/exec            controllers.VisualizerController.execAll
-POST    /visualizer/step            controllers.VisualizerController.execOneStep
-POST    /visualizer/back            controllers.VisualizerController.execBackStep
-POST    /visualizer/stop            controllers.VisualizerController.stopDebug
+POST    /postjsondata               controllers.VisualizerController.ajaxCall
+
+#POST    /visualizer/compile         controllers.VisualizerController.compile
+#POST    /visualizer/debug           controllers.VisualizerController.startStepExec
+#POST    /visualizer/exec            controllers.VisualizerController.execAll
+#POST    /visualizer/step            controllers.VisualizerController.execOneStep
+#POST    /visualizer/back            controllers.VisualizerController.execBackStep
+#POST    /visualizer/stop            controllers.VisualizerController.stopDebug
 
 GET     /converter                  controllers.ConverterController.index
 GET     /converterIndex             controllers.ConverterController.exIndex

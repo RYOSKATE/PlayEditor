@@ -390,7 +390,7 @@ int main()
                             data:JSON.stringify(jsondata),//JSON.stringifyを忘れない
                             dataType:'json',
                             contentType:'text/json',
-                            timeout:10000,
+                            //timeout:10000,
                             success: function(data) {
                                 //alert("ok");
                                 document.getElementById("debugStatus").innerHTML = "DebugStatus:" + data.debugState;
@@ -555,7 +555,9 @@ int main()
                         editor.getSelection().setSelectionRange(range);
 
                     }
-                    outputEditor.setValue(jsondata.output, -1);
+                    var nectLineEditOutput = jsondata.output.replace(/\\n/g, `
+`);
+                    outputEditor.setValue(nectLineEditOutput, -1);
                     drawMemoryState(d);
                 }
             }

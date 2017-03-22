@@ -3,30 +3,26 @@
  */
 /*可視化領域描画処理*/
 //$(function(){
-(function($){
-    $(function(){
-        $(document)
-            .on('click', '.popup_btn', function(){
-                // ポップアップの幅と高さからmarginを計算する
-                var mT = ($('#popup1').outerHeight() / 2) * (-1) + 'px';
-                var mL = ($('#popup1').outerWidth() / 2) * (-1) + 'px';
+$(document)
+    .on('click', '.popup_btn', function(){
+        // ポップアップの幅と高さからmarginを計算する
+        var mT = ($('#popup1').outerHeight() / 2) * (-1) + 'px';
+        var mL = ($('#popup1').outerWidth() / 2) * (-1) + 'px';
 
-                // marginを設定して表示
-                $('.popup').hide();
-                $('#popup1').css({
-                    'margin-top': mT,
-                    'margin-left': mL
-                }).show();
-                $('#overlay').show();
+        // marginを設定して表示
+        $('.popup').hide();
+        $('#popup1').css({
+            'margin-top': mT,
+            'margin-left': mL
+        }).show();
+        $('#overlay').show();
 
-                return false;
-            })
-            .on('click', '.close_btn, #overlay', function(){
-                $('.popup, #overlay').hide();
-                return false;
-            });
+        return false;
+    })
+    .on('click', '.close_btn, #overlay', function(){
+        $('.popup, #overlay').hide();
+        return false;
     });
-})(jQuery);
 window.addEventListener( "load", function() {
     var container = document.getElementById("canvasContainer"),
         canvas1 = document.getElementById("display"),

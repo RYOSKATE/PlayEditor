@@ -21,8 +21,26 @@
 
 
     <div clsee="row">
-        <div class="col-lg-6 col-md-6">
-            可視化デバッグ用ボタン
+        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+            <a href="#popup1" class="popup_btn">ツール説明</a>
+            <div id="popup1" class="popup">
+                <div class="popup_inner">
+                    <h4>ツール説明</h4>
+                    <p>下のエディタにプログラムを書き、上のボタンを押すことで可視化実行ができます。</p>
+                    <p>(マウスカーソルを重ねるとで各ボタンの説明が表示されます。)</p>
+                    <p>実験前にデフォルトで表示されているプログラムをステップ実行して、</p>
+                    <p>どう可視化されるか確認してみてください。</p>
+                    <p>十分に確認できたらページ下部のボタンでトップページに戻れます。</p>
+                    <p>実験1,2,3,4を順に実施してください。</p>
+                    <p>もしExecution exceptionと書いてある真っ赤な画面になったらごめんなさい。</p>
+                    <p>ツールのバグです。ブラウザの戻るボタンを押してください。</p>
+
+                    <div>
+                        <a href="#close_btn" class="close_btn">閉じる</a>
+                    </div>
+                </div>
+            </div>
+            <div id="overlay"></div>
         <div class="btn-group">
             <div class="btn-group">
                 <button title="エディタのフォントサイズ変更" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-search"></i> <span class="caret"></span></button>
@@ -51,7 +69,8 @@
             <div id="editorMain" style="height: 500px"></div>
             output
             <div id="output" style="height: 100px"></div>
-
+        </div>
+        <div id="canvasContainer" class="col-lg-9 col-md-8 col-sm-7 col-xs-12">
             <canvas id="display" style="width: 100%;height: 95vh; border: 1px black solid"></canvas>
         </div>
 
@@ -164,7 +183,7 @@ int main(){
             if(localStorage.currentex == ""){
                 document.getElementById("exstart").style.display = "none";
                 document.getElementById("exans").style.display = "none";
-                document.getElementById("description").innerHTML = "下のエディタにプログラムを書き、上のボタンを押すことで可視化実行ができます。<br>(マウスカーソルを重ねるとで各ボタンの説明が表示されます。)<br>実験前にデフォルトで表示されているプログラムをステップ実行して、<br>どう可視化されるか確認してみてください。<br>十分に確認できたらページ下部のボタンでトップページに戻れます。実験を開始してください<br>もしExecution exceptionと書いてある真っ赤な画面になったらごめんなさい。<br>ツールのバグです。ブラウザの戻るボタンを押してください。";
+                //document.getElementById("description").innerHTML = "下のエディタにプログラムを書き、上のボタンを押すことで可視化実行ができます。<br>(マウスカーソルを重ねるとで各ボタンの説明が表示されます。)<br>実験前にデフォルトで表示されているプログラムをステップ実行して、<br>どう可視化されるか確認してみてください。<br>十分に確認できたらページ下部のボタンでトップページに戻れます。実験を開始してください<br>もしExecution exceptionと書いてある真っ赤な画面になったらごめんなさい。<br>ツールのバグです。ブラウザの戻るボタンを押してください。";
                 localStorage.startTime = "";
             }
             else  if(localStorage.currentex == "ex1" || localStorage.currentex == "ex2" || localStorage.currentex == "ex3" || localStorage.currentex == "ex4") {

@@ -129,6 +129,20 @@ class VisualizerController @Inject() extends Controller {
 //    }
 //  }
 
+  def getListOfFiles(dir: String): List[JFile] = {
+    val d = new JFile(dir)
+    if (d.exists) {
+      var files = d.listFiles.filter(_.isFile).toList
+      d.listFiles.filter(_.isDirectory).foreach{ dir =>
+        files = files ::: getListOfFiles(dir.getAbsolutePath)
+      }
+      files
+    }
+    else {
+      List[JFile]()
+    }
+  }
+
   def fileupload = Action(parse.multipartFormData) { request =>
 
 //    val filename = file.filename
@@ -153,7 +167,7 @@ class VisualizerController @Inject() extends Controller {
       "uuid" -> uuid,
       "currentDir" -> currentDir,
       "dirp" -> dirp.toString,
-      "filenames" -> filenames,
+      "filenames" -> getListOfFiles(dirp.toString).toString,
       "num" -> request.body.file("files").size
     )
     Ok(Json.stringify(json)).withSession("uuid" -> uuid)

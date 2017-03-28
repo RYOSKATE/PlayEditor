@@ -1,4 +1,4 @@
-name := """PlayEditor"""
+name := """PlayVisualizerC"""
 
 version := "1.0-SNAPSHOT"
 

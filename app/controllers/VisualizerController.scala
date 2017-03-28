@@ -2,6 +2,9 @@ package controllers
 
 import java.util
 import javax.inject._
+import java.nio.file.{Paths, Files}
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
+import java.io.{File => JFile} // リネームして区別しやすくする
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.arnx.jsonic.JSON
@@ -98,6 +101,62 @@ class VisualizerController @Inject() extends Controller {
       }
     }
     return nodes
+  }
+
+//  def upload = Action(parse.multipartFormData) { request =>
+//    request.body.file("picture").map { picture =>
+//      import java.io.File
+//      val filename = picture.filename
+//      val contentType = picture.contentType
+//      picture.ref.moveTo(new File(s"/tmp/picture/$filename"))
+//      Ok("File uploaded")
+//    }.getOrElse {
+//      Redirect(routes.Application.index).flashing(
+//        "error" -> "Missing file")
+//    }
+//  }
+
+//  def upload = Action(parse.multipartFormData) { request =>
+//    request.body.file("files").map { file =>
+//      import java.io.File
+//      val filename = file.filename
+//      val contentType = file.contentType
+//      //file.ref.moveTo(new File(s"/tmp/picture/$filename"))
+//      Ok("File uploaded")
+//    }.getOrElse {
+//      Redirect(routes.Application.index).flashing(
+//        "error" -> "Missing file")
+//    }
+//  }
+
+  def fileupload = Action(parse.multipartFormData) { request =>
+
+//    val filename = file.filename
+//    val contentType = file.contentType
+    //file.ref.moveTo(new File(s"/tmp/picture/$filename"))
+
+    //request.body.moveTo(new File("/tmp/picture/uploaded"))files
+    val uuid = reset(request.session)
+
+    // 新規ディレクトリ作成
+    val dirp = Paths.get("executeDir", uuid)
+    if(Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
+    val currentDir = new JFile(".").getAbsoluteFile().getParent()
+    var filenames = ""
+    request.body.file("files").map { picture =>
+      val filename = picture.filename
+      filenames += filename + ","
+      val contentType = picture.contentType
+      picture.ref.moveTo(new JFile(s"$dirp\\$filename"))
+    }
+    val json = Json.obj(
+      "uuid" -> uuid,
+      "currentDir" -> currentDir,
+      "dirp" -> dirp.toString,
+      "filenames" -> filenames,
+      "num" -> request.body.file("files").size
+    )
+    Ok(Json.stringify(json)).withSession("uuid" -> uuid)
   }
 
   def ajaxCall = Action { implicit request =>

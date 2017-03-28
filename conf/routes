@@ -18,3 +18,4 @@ GET     /experiment4                 controllers.VisualizerController.ex4
 
 GET     /visualizer                 controllers.VisualizerController.index
 POST    /postjsondata               controllers.VisualizerController.ajaxCall
+POST    /fileupload                 controllers.VisualizerController.fileupload

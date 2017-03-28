@@ -80,7 +80,10 @@
                                 <li>Item 2</li>
                                 <li>Item 3</li>
                             </ul>
-                            <input type="file" />
+                            @helper.form(action = routes.VisualizerController.fileupload, 'enctype -> "multipart/form-data", 'id -> "my-form") {
+                                <input type="file" name="files" multiple>
+                                <button type="button" onclick="file_upload()">アップロード</button>
+                            }
                         </div>
                     </div>
                 </div>
@@ -577,7 +580,33 @@ int main()
                     drawMemoryState(d);
                 }
             }
+            function file_upload()
+            {
+                // フォームデータを取得
+                var form = $('#my-form');
+                var formdata = new FormData(form[0]);
 
+                // POSTでアップロード
+                $.ajax({
+                    url  : "/fileupload",
+                    type : "POST",
+                    data : formdata,
+                    cache       : false,
+                    contentType : false,
+                    processData : false,
+                    dataType    : "html",
+                    success: function(data) {
+                        alert(data);
+                    },
+                    error: function(data) {
+                        alert("invalid data");
+                    },
+                    complete : function(data) {
+                        // Loadingイメージを消す
+                        //removeLoading();
+                    }
+                });
+            }
     </script>
 
 }

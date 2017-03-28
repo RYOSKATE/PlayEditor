@@ -100,9 +100,6 @@ class VisualizerController @Inject() extends Controller {
     return nodes
   }
 
-
-
-
   def ajaxCall = Action { implicit request =>
     var jsonObj = request.body.asJson.get
     val stackData = (jsonObj \ "stackData").as[String]
@@ -115,7 +112,7 @@ class VisualizerController @Inject() extends Controller {
         getfield(uuid).textOnEditor = sourcetext
         val node = rawDataToUniTree(getfield(uuid).textOnEditor)
         var nodes = new util.ArrayList[UniNode]
-        if(node.isInstanceOf[util.ArrayList[UniNode]]){
+        if(node.isInstanceOf[util.ArrayList[_]]){
           nodes = flatten(node.asInstanceOf[util.List[Object]])
         }
         else{
@@ -241,7 +238,7 @@ class VisualizerController @Inject() extends Controller {
     //getfield(uuid).textOnEditor = getfield(uuid).form.bindFromRequest.get
     val node = rawDataToUniTree(getfield(uuid).textOnEditor)
     var nodes = new util.ArrayList[UniNode]
-    if(node.isInstanceOf[util.ArrayList[UniNode]]){
+    if(node.isInstanceOf[util.ArrayList[_]]){
       nodes = flatten(node.asInstanceOf[util.List[Object]])
     }
     else{

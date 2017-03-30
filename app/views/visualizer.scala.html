@@ -77,8 +77,10 @@
                         <div class="panel-body">
                             <ul id="filelist">
                                 <li>アップロードされたファイルはここにファイルパスが表示されます。</li>
+                                <li><a href="#" onclick="file_download('compiling.gif')">\compiling.gif</a></li>
+
                             </ul>
-                            @helper.form(action = routes.VisualizerController.fileupload, 'enctype -> "multipart/form-data", 'id -> "my-form") {
+                            @helper.form(action = routes.VisualizerController.upload, 'enctype -> "multipart/form-data", 'id -> "my-form") {
                                 <input type="file" name="files">
                                 <button type="button" onclick="file_upload()">アップロード</button>
                             }
@@ -587,12 +589,19 @@ int main()
                 }
 
                 for (var i = 0; i < filelist.length; ++i){
+
+                    var ele = document.createElement("a");
+                    ele.href = "/download/" + filelist[i].replace("\\","");
+                    ele.appendChild(document.createTextNode(filelist[i]));
+
                     var item = document.createElement("li");//li要素を作成
-                    item.textContent = filelist[i];//作成した要素のtextContentプロパティを編集
+                    item.appendChild(ele)
+
                     parElm.appendChild(item);//sample_container要素に追加
                 }
 
             }
+
             function file_upload()
             {
                 // フォームデータを取得
@@ -601,7 +610,7 @@ int main()
                 dispLoading("送信中...");
                 // POSTでアップロード
                 $.ajax({
-                    url  : "/fileupload",
+                    url  : "/upload",
                     type : "POST",
                     data : formdata,
                     cache       : false,

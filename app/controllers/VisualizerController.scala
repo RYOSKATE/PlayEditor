@@ -62,7 +62,8 @@ class VisualizerController @Inject() extends Controller {
   val fields = new util.LinkedHashMap[String,Fields]
 
   def getfield(uuid:String):Fields={return fields.get(uuid)}
-  //index.scala.htmlがview
+
+  def isFieldExist(uuid:String):Boolean={return fields.containsKey(uuid) }
 
   def exIndex = Action {
     Ok(views.html.visualizerIndex("This is Visualizer Page."))
@@ -117,9 +118,8 @@ class VisualizerController @Inject() extends Controller {
     }
   }
 
-  def fileupload = Action(parse.multipartFormData) { request =>
-    val uuid = reset(request.session)
-
+  def upload = Action(parse.multipartFormData) { request =>
+    val uuid = getUUIDfromSession(request.session)
     // tmpにディレクトリ作成
     val dirp = Paths.get("/tmp", uuid)
     if(Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
@@ -146,15 +146,22 @@ class VisualizerController @Inject() extends Controller {
     Ok(Json.stringify(json)).withSession("uuid" -> uuid)
   }
 
+  def download(filename : String)  = Action { implicit request =>
+    val uuid = getUUIDfromSession(request.session)
+    val dir = Paths.get("/tmp", uuid)
+    val file = new JFile(dir.toString + "/" + filename)
+    Ok.sendFile(content = file, inline = false)
+  }
+
   def ajaxCall = Action { implicit request =>
     var jsonObj = request.body.asJson.get
     val stackData = (jsonObj \ "stackData").as[String]
     val debugState = (jsonObj \ "debugState").as[String]
     val output = (jsonObj \ "output").as[String]
     val sourcetext = (jsonObj \ "sourcetext").as[String]
+    val uuid = getUUIDfromSession(request.session)
     debugState match {
       case "debug" => {
-        val uuid = reset(request.session)
         getfield(uuid).textOnEditor = sourcetext
         val node = rawDataToUniTree(getfield(uuid).textOnEditor)
         var nodes = new util.ArrayList[UniNode]
@@ -176,7 +183,6 @@ class VisualizerController @Inject() extends Controller {
         Ok(Json.stringify(json)).withSession("uuid" -> uuid)
       }
       case "exec" => {
-        val uuid = request.session.get("uuid").get
         var state : ExecState = null
         while (getfield(uuid).engine.isStepExecutionRunning())
         {
@@ -197,7 +203,6 @@ class VisualizerController @Inject() extends Controller {
         Ok(Json.stringify(json)).withSession("uuid" -> uuid)
       }
       case "reset" => {
-        val uuid = request.session.get("uuid").get
         getfield(uuid).count = 0
         val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
         val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
@@ -210,7 +215,6 @@ class VisualizerController @Inject() extends Controller {
         Ok(Json.stringify(json)).withSession("uuid" -> uuid)
       }
       case "step" => {
-        val uuid=request.session.get("uuid").get
         getfield(uuid).count += 1
         if(getfield(uuid).count < getfield(uuid).stateHistory.length - 1){
           val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
@@ -250,7 +254,6 @@ class VisualizerController @Inject() extends Controller {
         }
       }
       case "back" => {
-        val uuid = request.session.get("uuid").get
         if(1<=getfield(uuid).count){
           getfield(uuid).count -= 1
         }
@@ -265,7 +268,6 @@ class VisualizerController @Inject() extends Controller {
         Ok(Json.stringify(json)).withSession("uuid" -> uuid)
       }
       case "stop" => {
-        val uuid = request.session.get("uuid").get
         getfield(uuid).engine = null
         val json = Json.obj(
           "stackData" -> getfield(uuid).stateHistory.last,
@@ -279,72 +281,6 @@ class VisualizerController @Inject() extends Controller {
     }
   }
 
-  def startStepExec = Action { implicit request =>
-    val uuid = reset(request.session)
-    //getfield(uuid).textOnEditor = getfield(uuid).form.bindFromRequest.get
-    val node = rawDataToUniTree(getfield(uuid).textOnEditor)
-    var nodes = new util.ArrayList[UniNode]
-    if(node.isInstanceOf[util.ArrayList[_]]){
-      nodes = flatten(node.asInstanceOf[util.List[Object]])
-    }
-    else{
-      nodes += node.asInstanceOf[UniNode]
-    }
-    val state = getfield(uuid).engine.startStepExecution(nodes)
-    val jsonData = getJson(state,uuid)
-    val encOutput = getOutput(uuid)
-
-    Ok(views.html.visualizer(jsonData,"debug",encOutput,getfield(uuid).textOnEditor)).withSession("uuid" -> uuid)
-  }
-
-  def execAll = Action { implicit request =>
-    val uuid = request.session.get("uuid").get
-    var state : ExecState = null
-    do{
-      getfield(uuid).count += 1
-      state = getfield(uuid).engine.stepExecute()
-      val jsonData = getJson(state,uuid)
-      val encOutput = getOutput(uuid)
-    }while (getfield(uuid).engine.isStepExecutionRunning())
-    getfield(uuid).count = getfield(uuid).stateHistory.size()
-    val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count-1)
-    val output = getfield(uuid).outputsHistory.get(getfield(uuid).count-1)
-    Ok(views.html.visualizer(jsonData,"EOF",output,getfield(uuid).textOnEditor))
-  }
-
-  def execOneStep = Action { implicit request =>
-    val uuid=request.session.get("uuid").get
-    getfield(uuid).count += 1
-    if(getfield(uuid).count < getfield(uuid).stateHistory.length){
-      val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
-      val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
-      Ok(views.html.visualizer(jsonData,"nextStep",output,getfield(uuid).textOnEditor))
-    }
-    else if(getfield(uuid).engine.isStepExecutionRunning()) {
-      var state = getfield(uuid).engine.stepExecute()
-      while (state.getCurrentExpr().codeRange==null){
-        state = getfield(uuid).engine.stepExecute()
-      }
-      val jsonData = getJson(state,uuid)
-      val encOutput = getOutput(uuid)
-      Ok(views.html.visualizer(jsonData,"nextStep",encOutput,getfield(uuid).textOnEditor))
-    }
-    else{
-      getfield(uuid).count = getfield(uuid).stateHistory.length-1
-      Ok(views.html.visualizer(getfield(uuid).stateHistory.last, "EOF","",getfield(uuid).textOnEditor))
-    }
-  }
-
-  def execBackStep = Action { implicit request =>
-    val uuid = request.session.get("uuid").get
-    if(1<getfield(uuid).count){
-      getfield(uuid).count -= 1
-    }
-    val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
-    val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
-    Ok(views.html.visualizer(jsonData,"nextStep",output,getfield(uuid).textOnEditor))
-  }
-
   def stopDebug = Action { implicit request =>
     val uuid = request.session.get("uuid").get
     getfield(uuid).engine = null
@@ -355,19 +291,16 @@ class VisualizerController @Inject() extends Controller {
     new CPP14Mapper(true).parse(string)
   }
 
-  def reset(session:Session):String={
-    //count = 1
-    //outputsHistory.clear()
-    //stateHistory.clear()
-    //engine = new CppEngine()
-    //baos  = new ByteArrayOutputStream()
-    //engine.out = new PrintStream(baos)
+  def getUUIDfromSession(session:Session):String= {
     var uuid = java.util.UUID.randomUUID().toString()
     if(session.get("uuid")!=None){
       uuid = session.get("uuid").get
     }
-    fields.put(uuid,new Fields())
-    getfield(uuid).engine.out = new PrintStream(getfield(uuid).baos)
+
+    if(!isFieldExist(uuid)){
+      fields.put(uuid, new Fields())
+      getfield(uuid).engine.out = new PrintStream(getfield(uuid).baos)
+    }
     return uuid
   }
 

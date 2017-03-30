@@ -103,38 +103,12 @@ class VisualizerController @Inject() extends Controller {
     return nodes
   }
 
-//  def upload = Action(parse.multipartFormData) { request =>
-//    request.body.file("picture").map { picture =>
-//      import java.io.File
-//      val filename = picture.filename
-//      val contentType = picture.contentType
-//      picture.ref.moveTo(new File(s"/tmp/picture/$filename"))
-//      Ok("File uploaded")
-//    }.getOrElse {
-//      Redirect(routes.Application.index).flashing(
-//        "error" -> "Missing file")
-//    }
-//  }
-
-//  def upload = Action(parse.multipartFormData) { request =>
-//    request.body.file("files").map { file =>
-//      import java.io.File
-//      val filename = file.filename
-//      val contentType = file.contentType
-//      //file.ref.moveTo(new File(s"/tmp/picture/$filename"))
-//      Ok("File uploaded")
-//    }.getOrElse {
-//      Redirect(routes.Application.index).flashing(
-//        "error" -> "Missing file")
-//    }
-//  }
-
-  def getListOfFiles(dir: String): List[JFile] = {
+  def getListOfPaths(dir: String): List[JFile] = {
     val d = new JFile(dir)
     if (d.exists) {
       var files = d.listFiles.filter(_.isFile).toList
       d.listFiles.filter(_.isDirectory).foreach{ dir =>
-        files = files ::: getListOfFiles(dir.getAbsolutePath)
+        files = files ::: getListOfPaths(dir.getAbsolutePath)
       }
       files
     }
@@ -144,33 +118,25 @@ class VisualizerController @Inject() extends Controller {
   }
 
   def fileupload = Action(parse.multipartFormData) { request =>
-
-//    val filename = file.filename
-//    val contentType = file.contentType
-    //file.ref.moveTo(new File(s"/tmp/picture/$filename"))
-
-    //request.body.moveTo(new File("/tmp/picture/uploaded"))files
     val uuid = reset(request.session)
 
     // 新規ディレクトリ作成
     val dirp = Paths.get("/tmp", uuid)
     if(Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
     val currentDir = new JFile(".").getAbsoluteFile().getParent()
-    var filenames = ""
-    request.body.file("files").map { picture =>
+      request.body.file("files").map { picture =>
       val filename = picture.filename
-      filenames += filename + ","
-      val contentType = picture.contentType
-      picture.ref.moveTo(new JFile(s"$dirp\\$filename"))
+      picture.ref.moveTo(new JFile(s"$dirp/$filename"))
     }
-    val file2 = Paths.get("/tmp/sample.txt")
-    if(Files.notExists(file2)) Files.createFile(file2)
+    val dirpStr = dirp.toString
+    val filenames = getListOfPaths(dirpStr).toString
+
     val json = Json.obj(
       "uuid" -> uuid,
       "currentDir" -> currentDir,
       "dirp" -> dirp.toString,
-      "tmp" -> getListOfFiles("/tmp").toString,
-      "filenames" -> getListOfFiles(dirp.toString).toString,
+      //"tmp" -> getListOfPaths("/tmp").toString,
+      "filenames" -> filenames.replaceAll(dirpStr,""),
       "num" -> request.body.file("files").size
     )
     Ok(Json.stringify(json)).withSession("uuid" -> uuid)

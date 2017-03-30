@@ -153,7 +153,7 @@ class VisualizerController @Inject() extends Controller {
     val uuid = reset(request.session)
 
     // 新規ディレクトリ作成
-    val dirp = Paths.get("tmp", uuid)
+    val dirp = Paths.get("/tmp", uuid)
     if(Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
     val currentDir = new JFile(".").getAbsoluteFile().getParent()
     var filenames = ""

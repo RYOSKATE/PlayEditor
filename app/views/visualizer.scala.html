@@ -395,7 +395,7 @@ int main()
             function removeLoading(){
                 $("#loading").remove();
             }
-            
+
             function createEditor(idName,canWrite,initText) {
                 var editor = ace.edit(idName);
                 if (canWrite) {
@@ -597,7 +597,8 @@ int main()
                     processData : false,
                     dataType    : "html",
                     success: function(data) {
-                        alert(data.filenames);
+                        var jsondata = JSON.parse(data);
+                        alert(jsondata.filenames);
                     },
                     error: function(data) {
                         alert("invalid data");

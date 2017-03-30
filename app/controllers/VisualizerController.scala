@@ -153,7 +153,7 @@ class VisualizerController @Inject() extends Controller {
     val uuid = reset(request.session)
 
     // 新規ディレクトリ作成
-    val dirp = Paths.get("tmp", uuid)
+    val dirp = Paths.get("/tmp", uuid)
     if(Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
     val currentDir = new JFile(".").getAbsoluteFile().getParent()
     var filenames = ""
@@ -163,13 +163,13 @@ class VisualizerController @Inject() extends Controller {
       val contentType = picture.contentType
       picture.ref.moveTo(new JFile(s"$dirp\\$filename"))
     }
-    val file2 = Paths.get("tmp/sample.txt")
+    val file2 = Paths.get("/tmp/sample.txt")
     if(Files.notExists(file2)) Files.createFile(file2)
     val json = Json.obj(
       "uuid" -> uuid,
       "currentDir" -> currentDir,
       "dirp" -> dirp.toString,
-      "tmp" -> getListOfFiles("tmp").toString,
+      "tmp" -> getListOfFiles("/tmp").toString,
       "filenames" -> getListOfFiles(dirp.toString).toString,
       "num" -> request.body.file("files").size
     )

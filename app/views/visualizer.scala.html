@@ -81,7 +81,7 @@
                                 <li>Item 3</li>
                             </ul>
                             @helper.form(action = routes.VisualizerController.fileupload, 'enctype -> "multipart/form-data", 'id -> "my-form") {
-                                <input type="file" name="files" multiple>
+                                <input type="file" name="files">
                                 <button type="button" onclick="file_upload()">アップロード</button>
                             }
                         </div>
@@ -585,7 +585,7 @@ int main()
                 // フォームデータを取得
                 var form = $('#my-form');
                 var formdata = new FormData(form[0]);
-
+                dispLoading("送信中...");
                 // POSTでアップロード
                 $.ajax({
                     url  : "/fileupload",
@@ -596,14 +596,14 @@ int main()
                     processData : false,
                     dataType    : "html",
                     success: function(data) {
-                        alert(data);
+                        alert(data.filenames);
                     },
                     error: function(data) {
                         alert("invalid data");
                     },
                     complete : function(data) {
                         // Loadingイメージを消す
-                        //removeLoading();
+                        removeLoading();
                     }
                 });
             }

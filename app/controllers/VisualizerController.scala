@@ -135,7 +135,6 @@ class VisualizerController @Inject() extends Controller {
       "uuid" -> uuid,
       "currentDir" -> currentDir,
       "dirp" -> dirp.toString,
-      //"tmp" -> getListOfPaths("/tmp").toString,
       "filenames" -> filenames.replaceAll(dirpStr,""),
       "num" -> request.body.file("files").size
     )

@@ -75,10 +75,8 @@
                         <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion-1" aria-expanded="true" href="#accordion-1 .item-1">File Upload </a></h4></div>
                     <div role="tabpanel" class="panel-collapse collapse in item-1">
                         <div class="panel-body">
-                            <ul>
-                                <li>Item 1</li>
-                                <li>Item 2</li>
-                                <li>Item 3</li>
+                            <ul id="filelist">
+                                <li>アップロードされたファイルはここにファイルパスが表示されます。</li>
                             </ul>
                             @helper.form(action = routes.VisualizerController.fileupload, 'enctype -> "multipart/form-data", 'id -> "my-form") {
                                 <input type="file" name="files">
@@ -581,6 +579,20 @@ int main()
                     drawMemoryState(d);
                 }
             }
+            function ResetAllFileList(filelist){　　　　//全て削除
+                var parElm = document.getElementById('filelist');
+                var list = parElm.getElementsByTagName('li');
+                for(var i =list.length-1;i>=0; --i){　　//末尾から順にすべて削除
+                    parElm.removeChild(list[i]);
+                }
+
+                for (var i = 0; i < filelist.length; ++i){
+                    var item = document.createElement("li");//li要素を作成
+                    item.textContent = filelist[i];//作成した要素のtextContentプロパティを編集
+                    parElm.appendChild(item);//sample_container要素に追加
+                }
+
+            }
             function file_upload()
             {
                 // フォームデータを取得
@@ -598,7 +610,8 @@ int main()
                     dataType    : "html",
                     success: function(data) {
                         var jsondata = JSON.parse(data);
-                        alert(jsondata.filenames);
+                        ResetAllFileList(jsondata.filenames)
+                        //alert(jsondata.filenames);
                     },
                     error: function(data) {
                         alert("invalid data");

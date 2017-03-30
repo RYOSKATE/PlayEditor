@@ -49,7 +49,6 @@ class VisualizerController @Inject() extends Controller {
    * a path of `/`.
    */
 
-
   class Fields {
     var count = 0
     var engine: Engine = new CppEngine()
@@ -69,24 +68,35 @@ class VisualizerController @Inject() extends Controller {
     Ok(views.html.visualizerIndex("This is Visualizer Page."))
   }
 
-  def index = Action {
-    Ok(views.html.visualizer("This is Visualizer Page.","","",""))
+  def getUserDirFilesStr(uuid : String): List[String] = {
+    val dirp = Paths.get("/tmp", uuid)
+    if (Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
+    val dirpStr = dirp.toString
+    val dirList = getListOfPaths(dirpStr);
+    val filenames = dirList.toString
+    val filenamesStr = dirList.map {
+      _.toString.replace(dirpStr, "")
+    }
+    return filenamesStr
+  }
+  def index = Action { implicit request =>
+    val uuid = getUUIDfromSession(request.session)
+    val json = Json.obj(
+      "pageTitle" -> "visualizer",
+      "filenames" -> getUserDirFilesStr(uuid)
+    )
+    Ok(views.html.visualizer(Json.stringify(json))).withSession("uuid" -> uuid)
   }
 
-  def ex1 = Action {
-    Ok(views.html.visualizer("experimant 1","ex1","",""))
+  def experiment(id : String)  = Action { implicit request =>
+    val uuid = getUUIDfromSession(request.session)
+    val exNum = "ex" + id
+    val json = Json.obj(
+      "pageTitle" -> exNum,
+      "filenames" -> getUserDirFilesStr(uuid)
+    )
+    Ok(views.html.visualizer(Json.stringify(json))).withSession("uuid" -> uuid)
   }
-  def ex2 = Action {
-    Ok(views.html.visualizer("experimant 2","ex2","",""))
-  }
-  def ex3 = Action {
-    Ok(views.html.visualizer("experimant 3","ex3","",""))
-  }
-  def ex4 = Action {
-    Ok(views.html.visualizer("experimant 4","ex4","",""))
-  }
-
-
 
   def flatten(list:util.List[Object]):util.ArrayList[UniNode]={
     val nodes = new util.ArrayList[UniNode]
@@ -137,11 +147,11 @@ class VisualizerController @Inject() extends Controller {
     //
 
     val json = Json.obj(
-      "uuid" -> uuid,
-      "currentDir" -> currentDir,
-      "dirp" -> dirp.toString,
-      "filenames" -> filenamesStr,
-      "num" -> request.body.file("files").size
+      //"uuid" -> uuid,
+      //"currentDir" -> currentDir,
+      //"dirp" -> dirp.toString,
+      //"num" -> request.body.file("files").size,
+      "filenames" -> filenamesStr
     )
     Ok(Json.stringify(json)).withSession("uuid" -> uuid)
   }
@@ -281,11 +291,11 @@ class VisualizerController @Inject() extends Controller {
     }
   }
 
-  def stopDebug = Action { implicit request =>
-    val uuid = request.session.get("uuid").get
-    getfield(uuid).engine = null
-    Ok(views.html.visualizer(getfield(uuid).stateHistory.last, "STOP","",getfield(uuid).textOnEditor))
-  }
+//  def stopDebug = Action { implicit request =>
+//    val uuid = request.session.get("uuid").get
+//    getfield(uuid).engine = null
+//    Ok(views.html.visualizer(getfield(uuid).stateHistory.last, "STOP","",getfield(uuid).textOnEditor))
+//  }
 
   def rawDataToUniTree(string:String)={
     new CPP14Mapper(true).parse(string)

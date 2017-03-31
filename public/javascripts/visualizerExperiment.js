@@ -18,7 +18,7 @@ function setEditorAndExperiment(pageTitle){
 
     var ex4Text  = "再帰関数の問題です<br>以下のプログラムを実行したとき<br>n=1, a='B', b='A', c='C'<br>になるのは関数Hが何回呼ばれたときか？(回答例:10回目)";
 
-    if(pageTitle == "")
+    if(pageTitle === "visualizer")
     {
         localStorage.currentex = "";
         localStorage.sourcefile = "#include<stdio.h>";

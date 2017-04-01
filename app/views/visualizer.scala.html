@@ -54,11 +54,12 @@
             @*<button id="save" class="btn btn-default"><i class="glyphicon glyphicon-floppy-save"></i></button>*@
             @*<button id="load" class="btn btn-default"><i class="glyphicon glyphicon-folder-open"></i></button>*@
             <button id="debug" title="可視化デバッグ実行開始(最初に1回必ず押す)" class="btn btn-default"><i class="glyphicon glyphicon-play"></i></button>@*コンパイル済みならデバッグ開始*@
+            <button id="stop" title="可視化デバッグ終了" class="btn btn-default"><i class="glyphicon glyphicon-stop"></i></button>@*デバッグ中なら停止*@
             <button id="reset" title="実行中のプログラムを最初に戻す" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>@*コンパイル済みならデバッグ開始*@
+            <button id="back" title="前の式に戻る" class="btn btn-default"><i class="glyphicon glyphicon-arrow-left"></i></button>@*デバッグ開始済みなら1ステップ戻る*@
+            <button id="step" title="次の式を実行する(次に実行する式をハイライト)" class="btn btn-default"><i class="glyphicon glyphicon-arrow-right"></i></button>@*デバッグ開始済みなら1ステップ進む*@
             <button id="exec" title="実行中のプログラムを最後まで実行する" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button> @*コンパイル済みなら実行*@
-            <button id="step" title="次の式を実行する(次に実行する式をハイライト)" class="btn btn-default"><i class="glyphicon glyphicon-arrow-down"></i></button>@*デバッグ開始済みなら1ステップ進む*@
-            <button id="back" title="前の式に戻る" class="btn btn-default"><i class="glyphicon glyphicon-arrow-up"></i></button>@*デバッグ開始済みなら1ステップ戻る*@
-            @*<button id="stop" title="可視化デバッグ終了" class="btn btn-default"><i class="glyphicon glyphicon-stop"></i></button>*@@*デバッグ中なら停止*@
+
         </div>
 
             <div id="debugStatus">DebugStatus:</div><br>
@@ -280,11 +281,12 @@
                                 "sourcetext": editor.getValue()
                             };
                             send(jsondata);
+                            $('canvas').clearCanvas();
                             localStorage.debug="false";
                             localStorage.line = 0;
                         }
                         else{
-                            alert("デバッグ開始ボタンを押してください");
+                            alert("デバッグが開始されていません");
                         }
                     });
                 }
@@ -303,9 +305,7 @@
             var outputEditor = ace.edit("output");
             outputEditor.setReadOnly(true);
             outputEditor.setTheme("ace/theme/terminal");
-
-            //createEditor('editorResult',false,mes);
-
+            outputEditor.$blockScrolling = Infinity
             function drawVisualizedResult(jsondata) {
                 var treeJson = jsondata.stackData;
                 var treeObj = JSON.parse(treeJson);
@@ -326,10 +326,9 @@
                         editor.getSelection().setSelectionRange(range);
 
                     }
-                    var nectLineEditOutput = jsondata.output.replace(/\\n/g, `
-`);
-                    outputEditor.setValue(nectLineEditOutput, -1);
-                    drawMemoryState(d);
+                    var nextLineEditOutput = jsondata.output.replace(/\\n/g, '\n');
+                    outputEditor.setValue(nextLineEditOutput);
+                    drawMemoryState(d,1);
                 }
             }
             function ResetAllFileList(filelist){　　　　//全て削除

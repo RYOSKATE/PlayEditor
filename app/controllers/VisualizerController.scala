@@ -172,7 +172,7 @@ class VisualizerController @Inject() extends Controller {
     val uuid = getUUIDfromSession(request.session)
     debugState match {
       case "debug" => {
-        getfield(uuid).textOnEditor = sourcetext
+        resetEngine(uuid).textOnEditor = sourcetext
         val node = rawDataToUniTree(getfield(uuid).textOnEditor)
         var nodes = new util.ArrayList[UniNode]
         if(node.isInstanceOf[util.ArrayList[_]]){
@@ -291,16 +291,15 @@ class VisualizerController @Inject() extends Controller {
     }
   }
 
-//  def stopDebug = Action { implicit request =>
-//    val uuid = request.session.get("uuid").get
-//    getfield(uuid).engine = null
-//    Ok(views.html.visualizer(getfield(uuid).stateHistory.last, "STOP","",getfield(uuid).textOnEditor))
-//  }
-
   def rawDataToUniTree(string:String)={
     new CPP14Mapper(true).parse(string)
   }
 
+  def resetEngine(uuid:String): Fields ={
+    fields.put(uuid, new Fields())
+    getfield(uuid).engine.out = new PrintStream(getfield(uuid).baos)
+    return getfield(uuid)
+  }
   def getUUIDfromSession(session:Session):String= {
     var uuid = java.util.UUID.randomUUID().toString()
     if(session.get("uuid")!=None){
@@ -308,8 +307,7 @@ class VisualizerController @Inject() extends Controller {
     }
 
     if(!isFieldExist(uuid)){
-      fields.put(uuid, new Fields())
-      getfield(uuid).engine.out = new PrintStream(getfield(uuid).baos)
+      resetEngine(uuid)
     }
     return uuid
   }

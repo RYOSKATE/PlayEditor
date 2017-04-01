@@ -341,7 +341,7 @@
                 for (var i = 0; i < filelist.length; ++i){
 
                     var ele = document.createElement("a");
-                    ele.href = "/download/" + filelist[i].replace("\\","");
+                    ele.href = "/download" + filelist[i].replace("\\","");
                     ele.appendChild(document.createTextNode(filelist[i]));
 
                     var item = document.createElement("li");//li要素を作成

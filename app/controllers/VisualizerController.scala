@@ -86,7 +86,6 @@ class VisualizerController @Inject() extends Controller {
 
   def index = Action { implicit request =>
     val uuid = getUUIDfromSession(request.session)
-    getfield(uuid).engine.setFileDir(getUserDir(uuid))
     val json = Json.obj(
       "pageTitle" -> "visualizer",
       "filenames" -> getUserDirFilesStr(uuid)
@@ -303,6 +302,7 @@ class VisualizerController @Inject() extends Controller {
 
   def resetEngine(uuid:String): Fields ={
     fields.put(uuid, new Fields())
+    getfield(uuid).engine.setFileDir(getUserDir(uuid))
     getfield(uuid).engine.out = new PrintStream(getfield(uuid).baos)
     return getfield(uuid)
   }

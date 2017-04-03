@@ -68,10 +68,14 @@ class VisualizerController @Inject() extends Controller {
     Ok(views.html.visualizerIndex("This is Visualizer Page."))
   }
 
-  def getUserDirFilesStr(uuid : String): List[String] = {
+  def getUserDir(uuid : String): String = {
     val dirp = Paths.get("/tmp", uuid)
     if (Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
-    val dirpStr = dirp.toString
+    return dirp.toString
+  }
+
+  def getUserDirFilesStr(uuid : String): List[String] = {
+    val dirpStr = getUserDir(uuid)
     val dirList = getListOfPaths(dirpStr);
     val filenames = dirList.toString
     val filenamesStr = dirList.map {
@@ -79,12 +83,14 @@ class VisualizerController @Inject() extends Controller {
     }
     return filenamesStr
   }
+
   def index = Action { implicit request =>
     val uuid = getUUIDfromSession(request.session)
     val json = Json.obj(
       "pageTitle" -> "visualizer",
       "filenames" -> getUserDirFilesStr(uuid)
     )
+    getfield(uuid).engine.setFileDir(getUserDir(uuid))
     Ok(views.html.visualizer(Json.stringify(json))).withSession("uuid" -> uuid)
   }
 

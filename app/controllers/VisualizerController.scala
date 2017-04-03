@@ -86,11 +86,11 @@ class VisualizerController @Inject() extends Controller {
 
   def index = Action { implicit request =>
     val uuid = getUUIDfromSession(request.session)
+    getfield(uuid).engine.setFileDir(getUserDir(uuid))
     val json = Json.obj(
       "pageTitle" -> "visualizer",
       "filenames" -> getUserDirFilesStr(uuid)
     )
-    getfield(uuid).engine.setFileDir(getUserDir(uuid))
     Ok(views.html.visualizer(Json.stringify(json))).withSession("uuid" -> uuid)
   }
 

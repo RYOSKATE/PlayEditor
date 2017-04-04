@@ -150,6 +150,7 @@
             var text = localStorage.sourcefile;
 
             var editor = createEditor('editorMain',true,text);
+
             if(localStorage.currentex == "ex1" || localStorage.currentex == "ex2" || localStorage.currentex == "ex3" || localStorage.currentex == "ex4") {
                 editor.setReadOnly(true);
             }
@@ -159,7 +160,7 @@
             outputEditor.setTheme("ace/theme/terminal");
             outputEditor.$blockScrolling = Infinity
 
-            function ResetAllFileList(filelist){　　　　//全て削除
+            function ResetAllFileList(filelist){　　　　//全て削除して再セット
                 var parElm = document.getElementById('filelist');
                 var list = parElm.getElementsByTagName('li');
                 for(var i =list.length-1;i>=0; --i){　　//末尾から順にすべて削除
@@ -167,9 +168,8 @@
                 }
 
                 for (var i = 0; i < filelist.length; ++i){
-
                     var ele = document.createElement("a");
-                    ele.href = "/download" + filelist[i].replace("\\","");
+                    ele.href = "/download/" + filelist[i];
                     ele.appendChild(document.createTextNode(filelist[i]));
 
                     var item = document.createElement("li");//li要素を作成
@@ -177,7 +177,6 @@
 
                     parElm.appendChild(item);//sample_container要素に追加
                 }
-
             }
 
             function file_upload(){

@@ -77,10 +77,7 @@ class VisualizerController @Inject() extends Controller {
   def getUserDirFilesStr(uuid : String): List[String] = {
     val dirpStr = getUserDir(uuid)
     val dirList = getListOfPaths(dirpStr);
-    val filenames = dirList.toString
-    val filenamesStr = dirList.map {
-      _.toString.replace(dirpStr, "")
-    }
+    val filenamesStr = dirList.map{ _.getName }
     return filenamesStr
   }
 
@@ -136,17 +133,16 @@ class VisualizerController @Inject() extends Controller {
   def upload = Action(parse.multipartFormData) { request =>
     val uuid = getUUIDfromSession(request.session)
     // tmpにディレクトリ作成
-    val dirp = Paths.get("/tmp", uuid)
+    val dirp  = Paths.get("/tmp", uuid)//Path
     if(Files.notExists(dirp)) Files.createDirectories(dirp) // mkdir -p
     val currentDir = new JFile(".").getAbsoluteFile().getParent()
-      request.body.file("files").map { picture =>
-      val filename = picture.filename
-      picture.ref.moveTo(new JFile(s"$dirp/$filename"))
+    request.body.file("files").map { file =>
+      val filename = file.filename
+      file.ref.moveTo(new JFile(dirp.toString,filename),replace = true)//replace:true
     }
     val dirpStr = dirp.toString
-    val dirList = getListOfPaths(dirpStr);
-    val filenames = dirList.toString
-    val filenamesStr = dirList.map{ _.toString.replace(dirpStr,"") }
+    val dirList = getListOfPaths(dirpStr)
+    val filenamesStr = dirList.map{ _.getName }
     // List[JFile]なのでJFileをStringに変えたList[String]にmapして作る
     //各Stringの親ディレクトリ部分を削除
     //

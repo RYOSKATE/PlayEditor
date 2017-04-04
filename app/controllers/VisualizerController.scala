@@ -157,10 +157,21 @@ class VisualizerController @Inject() extends Controller {
     Ok(Json.stringify(json)).withSession("uuid" -> uuid)
   }
 
+  def delete(filename : String)  = Action { implicit request =>
+    val uuid = getUUIDfromSession(request.session)
+    val dir = Paths.get("/tmp", uuid)
+    val file = new JFile(dir.toString,filename)
+    file.delete()
+    val json = Json.obj(
+      "filenames" -> getUserDirFilesStr(uuid)
+    )
+    Ok(Json.stringify(json)).withSession("uuid" -> uuid)
+  }
+
   def download(filename : String)  = Action { implicit request =>
     val uuid = getUUIDfromSession(request.session)
     val dir = Paths.get("/tmp", uuid)
-    val file = new JFile(dir.toString + "/" + filename)
+    val file = new JFile(dir.toString,filename)
     Ok.sendFile(content = file, inline = false)
   }
 

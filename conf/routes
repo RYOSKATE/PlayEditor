@@ -17,3 +17,4 @@ GET     /visualizer                 controllers.VisualizerController.index
 POST    /postjsondata               controllers.VisualizerController.ajaxCall
 POST    /upload                     controllers.VisualizerController.upload
 GET     /download/:filename         controllers.VisualizerController.download(filename : String)
+GET     /delete/:filename           controllers.VisualizerController.delete(filename : String)

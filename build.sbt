@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "net.arnx" % "jsonic" % "1.3.10",
-  "com.github.UnicoenProject" % "Junicoen" % "5725d461c6dcfb57395fa9f7ff45cf4d50f3f131",
+  "com.github.UnicoenProject" % "Junicoen" % "bdee8a442b4aa93045cca2f01a9cec70d184d096",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "mysql" % "mysql-connector-java" % "5.1.36"
 )

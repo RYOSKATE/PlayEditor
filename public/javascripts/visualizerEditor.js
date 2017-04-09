@@ -1,6 +1,65 @@
 /**
  * Created by RYOSUKE on 2017/04/04.
  */
+
+function send(jsondata){
+    if(jsondata.debugState=="debug"){
+        dispLoading("コンパイル中...");
+    }
+    $.ajax({
+        url:"/postjsondata",//先ほどのActionを指定
+        type:'POST',
+        data:JSON.stringify(jsondata),//JSON.stringifyを忘れない
+        dataType:'json',
+        contentType:'text/json',
+        //timeout:10000,
+        success: function(data) {
+            //alert("ok");
+            document.getElementById("debugStatus").innerHTML = "DebugStatus:" + data.debugState;
+            if(data.debugState == "scanf"){
+                localStorage.isScanf = "true";
+            }
+            drawVisualizedResult(data);
+        },
+        error: function(data) {
+            alert("invalid data");
+        },
+        complete : function(data) {
+            // Loadingイメージを消す
+            removeLoading();
+        }
+    });
+}
+
+function createConsoleEditor(idName, text) {
+    var outputEditor = ace.edit(idName);
+    outputEditor.setReadOnly(true);
+    outputEditor.$blockScrolling = Infinity;
+    outputEditor.setTheme("ace/theme/terminal");
+    var id = '#'+idName
+    $( id ).on('keyup', function (e) {
+        var isDuringScanf = localStorage.isScanf == "true";
+        outputEditor.setReadOnly(!isDuringScanf);
+        if ( e.keyCode  == 13 && isDuringScanf) {
+            var text = outputEditor.getValue();
+            text = text.substr(0,text.length-1);//改行文字削除
+            var pos = text.lastIndexOf('\n');
+            text = text.substr(pos+1);
+            var jsondata = { //送りたいJSONデータ
+                "stackData": "",
+                "debugState": "step",
+                "output": "",
+                "sourcetext": "",
+                "stdinText" : text
+            };
+            localStorage.isScanf = "false";
+            send(jsondata);
+            return false;
+        }
+    } );
+    outputEditor.setValue(text, 1);
+    return outputEditor;
+}
 function createEditor(idName,canWrite,initText) {
     var editor = ace.edit(idName);
     if (canWrite) {
@@ -21,34 +80,8 @@ function createEditor(idName,canWrite,initText) {
     });
 
     editor.setReadOnly(!canWrite);
+
     if (canWrite) {
-
-        function send(jsondata){
-            if(jsondata.debugState=="debug"){
-                dispLoading("コンパイル中...");
-            }
-            $.ajax({
-                url:"/postjsondata",//先ほどのActionを指定
-                type:'POST',
-                data:JSON.stringify(jsondata),//JSON.stringifyを忘れない
-                dataType:'json',
-                contentType:'text/json',
-                //timeout:10000,
-                success: function(data) {
-                    //alert("ok");
-                    document.getElementById("debugStatus").innerHTML = "DebugStatus:" + data.debugState;
-                    drawVisualizedResult(data);
-                },
-                error: function(data) {
-                    alert("invalid data");
-                },
-                complete : function(data) {
-                    // Loadingイメージを消す
-                    removeLoading();
-                }
-            });
-        }
-
         $('#debug').click(function (e) {
             var text =editor.getValue();
             if(text.length<=1){
@@ -154,23 +187,22 @@ function drawVisualizedResult(jsondata) {
     var treeObj = JSON.parse(treeJson);
     var data = new Array(treeObj);
 
-
-    if (localStorage.debug == "true") {
+    if (localStorage.debug != "true") {
+    } else {
         document.getElementById("exstart").disabled = "true";
         var Range = require("ace/range").Range;
         var d = data[0];
         var codeRange = d.currentExpr.codeRange;
-        if(jsondata.debugState == "EOF"){
+        if (jsondata.debugState == "EOF") {
             var range = new Range(new Number(-1), new Number(0), new Number(-1), new Number(1));
             editor.getSelection().setSelectionRange(range);
         }
         else if (codeRange) {
             var range = new Range(new Number(codeRange.begin.y - 1), new Number(codeRange.begin.x), new Number(codeRange.end.y - 1), new Number(codeRange.end.x + 1));
             editor.getSelection().setSelectionRange(range);
-
         }
         var nextLineEditOutput = jsondata.output.replace(/\\n/g, '\n');
-        outputEditor.setValue(nextLineEditOutput);
-        drawMemoryState(d,1);
+        createConsoleEditor("output",jsondata.output);
+        drawMemoryState(d, 1);
     }
 }

@@ -206,19 +206,23 @@ class VisualizerController @Inject() extends Controller {
       }
       case "exec" => {
         var state : ExecState = null
-        while (getfield(uuid).engine.isStepExecutionRunning())
+        while (getfield(uuid).engine.isStepExecutionRunning() && !getfield(uuid).engine.getIsWaitingForStdin())
         {
           getfield(uuid).count += 1
           state = getfield(uuid).engine.stepExecute()
           val jsonData = getJson(state,uuid)
           val encOutput = getOutput(uuid)
         }
+        var stateText = "EOF"
+        if(getfield(uuid).engine.getIsWaitingForStdin()){
+          stateText = "scanf"
+        }
         getfield(uuid).count = getfield(uuid).stateHistory.length - 1
         val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
         val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
         val json = Json.obj(
           "stackData" -> jsonData,
-          "debugState" -> "EOF",
+          "debugState" -> stateText,
           "output" -> output,
           "sourcetext" -> sourcetext
         )
@@ -238,27 +242,35 @@ class VisualizerController @Inject() extends Controller {
       }
       case "step" => {
         getfield(uuid).count += 1
-        if(getfield(uuid).count < getfield(uuid).stateHistory.length - 1){
+        if(getfield(uuid).count < getfield(uuid).stateHistory.length - 1) {
           val jsonData = getfield(uuid).stateHistory.get(getfield(uuid).count)
           val output = getfield(uuid).outputsHistory.get(getfield(uuid).count)
           val json = Json.obj(
             "stackData" -> jsonData,
-            "debugState" -> ("Step:"+ getfield(uuid).count.toString),
+            "debugState" -> ("Step:" + getfield(uuid).count.toString),
             "output" -> output,
             "sourcetext" -> sourcetext
           )
           Ok(Json.stringify(json)).withSession("uuid" -> uuid)
         }
         else if(getfield(uuid).engine.isStepExecutionRunning()) {
+          if(getfield(uuid).engine.getIsWaitingForStdin()){
+            val stdinText = (jsonObj \ "stdinText").as[String]
+            getfield(uuid).engine.setIn(stdinText)
+          }
           var state = getfield(uuid).engine.stepExecute()
           while (state.getCurrentExpr().codeRange==null){
             state = getfield(uuid).engine.stepExecute()
           }
           val jsonData = getJson(state,uuid)
           val output = getOutput(uuid)
+          var stateText = ("Step:"+ getfield(uuid).count.toString)
+          if(getfield(uuid).engine.getIsWaitingForStdin()){
+            stateText = "scanf"
+          }
           val json = Json.obj(
             "stackData" -> jsonData,
-            "debugState" -> ("Step:"+ getfield(uuid).count.toString),
+            "debugState" -> stateText,
             "output" -> output,
             "sourcetext" -> sourcetext
           )

@@ -68,7 +68,7 @@
             <br>
             <div id="description"></div>
             <div id="editorMain" style="height: 80%"></div>
-            output
+            <br>
             <div id="output" style="height: 22%"></div>
             <div role="tablist" aria-multiselectable="true" class="panel-group" id="accordion-1">
                 <div class="panel panel-default">
@@ -127,6 +127,7 @@
         }
 
 
+
             // Loadingイメージ表示関数
             function dispLoading(msg){
                 // 画面表示メッセージ
@@ -155,10 +156,7 @@
                 editor.setReadOnly(true);
             }
 
-            var outputEditor = ace.edit("output");
-            outputEditor.setReadOnly(true);
-            outputEditor.setTheme("ace/theme/terminal");
-            outputEditor.$blockScrolling = Infinity
+            var consolEditor = createConsoleEditor("output", "");
 
             function deleteFile(filename){
                 var url = "/delete/" + filename;

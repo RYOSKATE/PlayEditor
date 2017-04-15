@@ -1,69 +1,52 @@
 /**
  * Created by khlee on 11/8/16.
  */
-class Stopwatch {
-    constructor(display, results) {
+var Stopwatch = (function () {
+    function Stopwatch(display, results) {
         this.running = false;
-        this.display = display;
-        this.results = results;
         this.laps = [];
+        this.time = performance.now();
+        this.times = [0, 0, 0];
+        this.display = display;
         this.reset();
-        this.print(this.times);
+        this.print();
     }
-
-    reset() {
-        this.times = [ 0, 0, 0];
-    }
-
-    isRunning(){
+    Stopwatch.prototype.reset = function () {
+        this.times = [0, 0, 0];
+    };
+    Stopwatch.prototype.isRunning = function () {
         return this.running;
-    }
-
-    start() {
-        if (!this.time) this.time = performance.now();
+    };
+    Stopwatch.prototype.start = function () {
+        if (!this.time)
+            this.time = performance.now();
         if (!this.running) {
             this.running = true;
             requestAnimationFrame(this.step.bind(this));
         }
-    }
-
-    lap() {
-        let times = this.times;
-        if (this.running) {
-            this.reset();
-        }
-        let li = document.createElement('li');
-        li.innerText = this.format(times);
-        this.results.appendChild(li);
-    }
-
-    stop() {
+    };
+    Stopwatch.prototype.stop = function () {
         this.running = false;
         this.time = null;
-    }
-
-    restart() {
-        if (!this.time) this.time = performance.now();
+    };
+    Stopwatch.prototype.restart = function () {
+        if (!this.time)
+            this.time = performance.now();
         if (!this.running) {
             this.running = true;
             requestAnimationFrame(this.step.bind(this));
         }
         this.reset();
-    }
-
-    clear() {
-        clearChildren(this.results);
-    }
-
-    step(timestamp) {
-        if (!this.running) return;
+    };
+    Stopwatch.prototype.step = function (timestamp) {
+        if (!this.running)
+            return;
         this.calculate(timestamp);
         this.time = timestamp;
         this.print();
         requestAnimationFrame(this.step.bind(this));
-    }
-
-    calculate(timestamp) {
+    };
+    Stopwatch.prototype.calculate = function (timestamp) {
         var diff = timestamp - this.time;
         // Hundredths of a second are 100 ms
         this.times[2] += diff / 10;
@@ -77,20 +60,15 @@ class Stopwatch {
             this.times[0] += 1;
             this.times[1] -= 60;
         }
-    }
-
-    print() {
+    };
+    Stopwatch.prototype.print = function () {
         this.display.innerText = this.format(this.times);
-    }
-
-    pad0(num){
-        return ( '00' + num ).slice( -2 );
-    }
-
-    format(times) {
+    };
+    Stopwatch.prototype.pad0 = function (num) {
+        return ('00' + num).slice(-2);
+    };
+    Stopwatch.prototype.format = function (times) {
         return this.pad0(times[0]) + ":" + this.pad0(times[1]) + ":" + this.pad0(Math.floor(times[2]));
-    }
-}
-
-
-
+    };
+    return Stopwatch;
+}());

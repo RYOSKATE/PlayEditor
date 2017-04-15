@@ -37,10 +37,18 @@ function createConsoleEditor(idName, text) {
     outputEditor.$blockScrolling = Infinity;
     outputEditor.setTheme("ace/theme/terminal");
     var id = '#'+idName
+    $( id ).on('keydown', function (e) {
+        if(localStorage.isScanf == "true"){
+            outputEditor.setReadOnly(false);
+        }
+    } );
     $( id ).on('keyup', function (e) {
         var isDuringScanf = localStorage.isScanf == "true";
-        outputEditor.setReadOnly(!isDuringScanf);
-        if ( e.keyCode  == 13 && isDuringScanf) {
+        if(!isDuringScanf){
+            outputEditor.setReadOnly(true);
+        }
+        var enterKeyCode = 13;
+        if ( e.keyCode  == enterKeyCode && isDuringScanf) {
             var text = outputEditor.getValue();
             text = text.substr(0,text.length-1);//改行文字削除
             var pos = text.lastIndexOf('\n');
@@ -54,7 +62,6 @@ function createConsoleEditor(idName, text) {
             };
             localStorage.isScanf = "false";
             send(jsondata);
-            return false;
         }
     } );
     outputEditor.setValue(text, 1);

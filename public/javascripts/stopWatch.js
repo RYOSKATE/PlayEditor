@@ -15,6 +15,10 @@ class Stopwatch {
         this.times = [ 0, 0, 0];
     }
 
+    isRunning(){
+        return this.running;
+    }
+
     start() {
         if (!this.time) this.time = performance.now();
         if (!this.running) {
@@ -79,11 +83,12 @@ class Stopwatch {
         this.display.innerText = this.format(this.times);
     }
 
+    pad0(num){
+        return ( '00' + num ).slice( -2 );
+    }
+
     format(times) {
-        return `\
-${pad0(times[0], 2)}:\
-${pad0(times[1], 2)}:\
-${pad0(Math.floor(times[2]), 2)}`;
+        return this.pad0(times[0]) + ":" + this.pad0(times[1]) + ":" + this.pad0(Math.floor(times[2]));
     }
 }
 

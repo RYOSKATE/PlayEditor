@@ -70,18 +70,15 @@ function setEditorAndExperiment(pageTitle){
             }
         }
     }
+    $('#exans').prop('disabled', true);
+    var exStartElem = document.getElementById("exstart");
+    var stopwatch;
 
     $('#exstart').click(function (e) {
-        var jikan= new Date();
-
-        //時・分・秒を取得する
-        var hour = jikan.getHours();
-        var minute = jikan.getMinutes();
-        var second = jikan.getSeconds();
-        localStorage.startTime = hour+"時"+minute+"分"+second+"秒";
-        document.getElementById("exstart").innerHTML = localStorage.startTime;
-        document.getElementById("exstart").disabled = "true";
-
+        stopwatch = new Stopwatch(exStartElem, exStartElem);
+        stopwatch.start();
+        $('#exstart').prop('disabled', true);
+        $('#exans').prop('disabled', false);
         editor.setValue(localStorage.sourcefile, -1);
         for(var i = 1; i<=4; ++i) {
             var ex = "ex" + i;
@@ -96,30 +93,23 @@ function setEditorAndExperiment(pageTitle){
         editor.setReadOnly(true);
     });
     $('#exans').click(function (e) {
-        var jikan= new Date();
-        var hour = jikan.getHours();
-        var minute = jikan.getMinutes();
-        var second = jikan.getSeconds();
-        var time = hour+"時"+minute+"分"+second+"秒";
+        if(!stopwatch.isRunning()){
+            return;
+        }
+        stopwatch.stop();
 
         if(localStorage.currentex == "ex1"){
-            document.getElementById("exans").innerHTML = time;
             document.getElementById("description").innerHTML += "<br><br>答え a=3,b=2,c=1,d=4,e=6<br>";
         }
         else if(localStorage.currentex == "ex2"){
-            document.getElementById("exans").innerHTML = time;
             document.getElementById("description").innerHTML += "<br><br>答え n=2,r=2,(*pn)=0<br>";
         }
         else if(localStorage.currentex == "ex3"){
-            document.getElementById("exans").innerHTML = time;
             document.getElementById("description").innerHTML += "<br><br>答え ps[1]={1,2,5}<br>";
         }
         else if(localStorage.currentex == "ex4"){
-            document.getElementById("exans").innerHTML = time;
             document.getElementById("description").innerHTML += "<br><br>答え 5回目<br>";
         }
-        document.getElementById("description").innerHTML += "開始・終了時間と正解・不正解を用紙にメモし、<br>次の問題(ページ下部の戻るボタンより)に進んでください。";
+        document.getElementById("description").innerHTML += "所要時間と正解・不正解を用紙にメモし、<br>次の問題(ページ下部の戻るボタンより)に進んでください。";
     });
-
-    document.getElementById("exstart").innerHTML = localStorage.startTime;//開始時刻更新
 }

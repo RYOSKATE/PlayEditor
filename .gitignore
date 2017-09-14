@@ -17,3 +17,49 @@ server.pid
 
 .idea/
 *.DS_Store
+
+# Ignore Play! working directory #
+bin/
+/db
+.eclipse
+/lib/
+/logs/
+/modules
+/project/project
+/project/target
+/target
+tmp/
+test-result
+server.pid
+*.eml
+/dist/
+.cache
+
+.idea/
+*.DS_Store
+
+# general
+*~
+*.log
+tmp
+dump
+
+# Eclipse
+.settings
+.cache
+.project
+.classpath
+.scala_dependencies
+bin
+
+# SBT
+dist
+project/boot
+project/target
+project/plugins/target
+target
+.target
+
+# Play
+logs
+RUNNING_PID

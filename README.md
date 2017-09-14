@@ -1,5 +1,13 @@
 # PlayEditor <a href="http://doge.mit-license.org"><img src="http://img.shields.io/:license-mit-blue.svg"></a>
 
+# PlayEditor利用手順
+## オンライン
+* ブラウザから[デモページ](http://play-visualizer-c.herokuapp.com/visualizer)にアクセスし利用する
+## オフライン
+1. https://github.com/RYOSKATE/PlayVisualizerC/releases からスタンドアロン版をダウンロードする。
+1. binフォルダ内のファイルを実行し、サーバーを起動する。(Javaがインストールされていない場合は下記の *Javaインストール* を参照)
+1. ブラウザから localhost:9000/visualizer にアクセスし利用する。
+
 # PlayEditor開発環境導入手順
 * Java (インストール必須)
 * Play (インストール必須)

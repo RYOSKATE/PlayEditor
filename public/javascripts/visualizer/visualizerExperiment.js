@@ -40,7 +40,7 @@ function setEditorAndExperiment(pageTitle){
         //英語向け
 
         loadSourceFile("example_en.c");
-        loadSourceFile("example_ja.c");
+        //loadSourceFile("example_ja.c");
 
     }
     else if(pageTitle == "ex1" || pageTitle == "ex2" || pageTitle == "ex3" || pageTitle == "ex4") {

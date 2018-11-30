@@ -1,3 +1,10 @@
+***【Important】***
+
+***This system has not been maintained yet.***
+
+***It has evolved into  [PlayVisualizerC.js](https://github.com/RYOSKATE/PlayVisualizerC.js).***
+
+
 # PlayEditor <a href="http://doge.mit-license.org"><img src="http://img.shields.io/:license-mit-blue.svg"></a>
 
 # PlayEditor利用手順

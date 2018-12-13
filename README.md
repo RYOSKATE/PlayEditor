@@ -5,9 +5,9 @@
 ***It has evolved into  [PlayVisualizerC.js](https://github.com/RYOSKATE/PlayVisualizerC.js).***
 
 
-# PlayEditor <a href="http://doge.mit-license.org"><img src="http://img.shields.io/:license-mit-blue.svg"></a>
+# PlayVisualizerC <a href="http://doge.mit-license.org"><img src="http://img.shields.io/:license-mit-blue.svg"></a>
 
-# PlayEditor利用手順
+# For User
 ## オンライン
 * ブラウザから[デモページ](http://play-visualizer-c.herokuapp.com/visualizer)にアクセスし利用する
 ## オフライン
@@ -15,7 +15,7 @@
 1. binフォルダ内のファイルを実行し、サーバーを起動する。(Javaがインストールされていない場合は下記の *Javaインストール* を参照)
 1. ブラウザから localhost:9000/visualizer にアクセスし利用する。
 
-# PlayEditor開発環境導入手順
+# For Developer
 * Java (インストール必須)
 * Play (インストール必須)
 * EclipseなどのIDE(インストール推奨)
@@ -77,7 +77,7 @@ activator help
 もし実行できない場合はパスの確認、PCの再起動を試してみてください。
 
 
-## PlayEditor実行
+## PVC実行
 次にこのプロジェクトをクローン、もしくはダウンロードします。
 プロジェクトのディレクトリに移動し以下のコマンドを実行してください。
 ```
@@ -110,7 +110,7 @@ IDEAを再起動することで有効化されます。
 
 IDEA起動後に Import Projectを選択します。
 
-PlayEditorのプロジェクトディレクトリを選択しOKを押します。
+PVCのプロジェクトディレクトリを選択しOKを押します。
 
 Import project from external modelを選び、SBTを選択してください。
 
@@ -188,10 +188,10 @@ activator -jvm-debug 9999 run
 ```
 としてください。
 
-# PlayEditor構成概要
+# PVC構成概要
 PlayFrameworkはMVCモデルを採用しています。
 
-ただしPlayEditorはデータベースを使用しないため、モデルは用いず
+ただしPVCはデータベースを使用しないため、モデルは用いず
 主な処理はコントローラとビューで行われます。
 
 代表的・重要なファイルについて説明します。
